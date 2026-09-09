@@ -47,10 +47,8 @@
                 소설
             </a>
 
-            <a href="#">
+            <a href="search.html">
                 검색
-            </a>
-
             </a>
 
         </nav>
@@ -140,6 +138,16 @@ const novelId =
     params.get("id");
 
 
+// ========================================
+// 로그인 사용자
+// ========================================
+
+let currentUser = null;
+
+let isLiked = false;
+
+let likeCount = 0;
+
 
 // ========================================
 // HTML 보안 처리
@@ -164,6 +172,313 @@ function escapeHTML(text) {
 
 }
 
+
+// ========================================
+// 현재 로그인 사용자 확인
+// ========================================
+
+async function loadCurrentUser() {
+
+    const result =
+        await supabaseClient.auth.getUser();
+
+
+    if (result.error) {
+
+        console.error(
+            "로그인 사용자 확인 오류:",
+            result.error
+        );
+
+        currentUser = null;
+
+        return;
+
+    }
+
+
+    currentUser =
+        result.data.user || null;
+
+}
+
+
+// ========================================
+// 좋아요 정보 불러오기
+// ========================================
+
+async function loadLikeInfo() {
+
+    if (!novelId) {
+        return;
+    }
+
+
+    // ------------------------------------
+    // 전체 좋아요 개수
+    // ------------------------------------
+
+    const countResult =
+        await supabaseClient
+            .from("novel_likes")
+            .select(
+                "id",
+                {
+                    count: "exact",
+                    head: true
+                }
+            )
+            .eq(
+                "novel_id",
+                novelId
+            );
+
+
+    if (countResult.error) {
+
+        console.error(
+            "좋아요 개수 불러오기 오류:",
+            countResult.error
+        );
+
+        return;
+
+    }
+
+
+    likeCount =
+        countResult.count || 0;
+
+
+    // ------------------------------------
+    // 내가 좋아요를 눌렀는지 확인
+    // ------------------------------------
+
+    isLiked = false;
+
+
+    if (currentUser) {
+
+        const likedResult =
+            await supabaseClient
+                .from("novel_likes")
+                .select("id")
+                .eq(
+                    "novel_id",
+                    novelId
+                )
+                .eq(
+                    "user_id",
+                    currentUser.id
+                )
+                .maybeSingle();
+
+
+        if (likedResult.error) {
+
+            console.error(
+                "좋아요 상태 확인 오류:",
+                likedResult.error
+            );
+
+        } else {
+
+            isLiked =
+                !!likedResult.data;
+
+        }
+
+    }
+
+
+    updateLikeButton();
+
+}
+
+
+// ========================================
+// 좋아요 버튼 화면 업데이트
+// ========================================
+
+function updateLikeButton() {
+
+    const button =
+        document.getElementById(
+            "novel-like-button"
+        );
+
+
+    const count =
+        document.getElementById(
+            "novel-like-count"
+        );
+
+
+    if (!button || !count) {
+        return;
+    }
+
+
+    count.innerHTML =
+        `좋아요 <strong>${likeCount}</strong>`;
+
+
+    if (isLiked) {
+
+        button.classList.add("liked");
+
+        button.innerHTML = `
+            <span class="novel-like-icon">
+                ♥
+            </span>
+
+            좋아요 취소
+        `;
+
+    } else {
+
+        button.classList.remove("liked");
+
+        button.innerHTML = `
+            <span class="novel-like-icon">
+                ♡
+            </span>
+
+            좋아요
+        `;
+
+    }
+
+}
+
+
+// ========================================
+// 좋아요 누르기 / 취소
+// ========================================
+
+async function toggleLike() {
+
+    // ------------------------------------
+    // 로그인 확인
+    // ------------------------------------
+
+    if (!currentUser) {
+
+        alert(
+            "좋아요를 누르려면 로그인하세요."
+        );
+
+        return;
+
+    }
+
+
+    const button =
+        document.getElementById(
+            "novel-like-button"
+        );
+
+
+    if (!button) {
+        return;
+    }
+
+
+    button.disabled = true;
+
+
+    // ------------------------------------
+    // 좋아요 취소
+    // ------------------------------------
+
+    if (isLiked) {
+
+        const result =
+            await supabaseClient
+                .from("novel_likes")
+                .delete()
+                .eq(
+                    "novel_id",
+                    novelId
+                )
+                .eq(
+                    "user_id",
+                    currentUser.id
+                );
+
+
+        if (result.error) {
+
+            console.error(
+                "좋아요 취소 오류:",
+                result.error
+            );
+
+            alert(
+                "좋아요 취소에 실패했습니다."
+            );
+
+        } else {
+
+            isLiked = false;
+
+            likeCount =
+                Math.max(
+                    0,
+                    likeCount - 1
+                );
+
+        }
+
+    }
+
+    // ------------------------------------
+    // 좋아요 추가
+    // ------------------------------------
+
+    else {
+
+        const result =
+            await supabaseClient
+                .from("novel_likes")
+                .insert({
+
+                    novel_id:
+                        novelId,
+
+                    user_id:
+                        currentUser.id
+
+                });
+
+
+        if (result.error) {
+
+            console.error(
+                "좋아요 추가 오류:",
+                result.error
+            );
+
+            alert(
+                "좋아요 등록에 실패했습니다."
+            );
+
+        } else {
+
+            isLiked = true;
+
+            likeCount += 1;
+
+        }
+
+    }
+
+
+    button.disabled = false;
+
+    updateLikeButton();
+
+}
 
 
 // ========================================
@@ -195,7 +510,6 @@ async function loadNovel() {
     }
 
 
-
     // =====================================
     // 기존 RPC 사용
     // =====================================
@@ -207,7 +521,6 @@ async function loadNovel() {
                 target_novel_id: novelId
             }
         );
-
 
 
     if (result.error) {
@@ -233,15 +546,11 @@ async function loadNovel() {
     }
 
 
-
-    // RPC는 table 형태로 반환되므로 첫 번째 데이터 사용
-
     const novel =
         result.data &&
         result.data.length > 0
             ? result.data[0]
             : null;
-
 
 
     if (!novel) {
@@ -262,14 +571,12 @@ async function loadNovel() {
     }
 
 
-
     // =====================================
     // 페이지 제목
     // =====================================
 
     document.title =
         novel.title + " - NOVEL";
-
 
 
     // =====================================
@@ -282,7 +589,6 @@ async function loadNovel() {
         ).toLocaleDateString(
             "ko-KR"
         );
-
 
 
     // =====================================
@@ -331,7 +637,6 @@ async function loadNovel() {
         `;
 
     }
-
 
 
     // =====================================
@@ -392,6 +697,38 @@ async function loadNovel() {
                     </div>
 
 
+                    <!-- =================================
+                         좋아요
+                    ================================== -->
+
+                    <div class="novel-like-area">
+
+                        <button
+                            id="novel-like-button"
+                            class="novel-like-button"
+                            type="button"
+                            onclick="toggleLike()"
+                        >
+
+                            <span class="novel-like-icon">
+                                ♡
+                            </span>
+
+                            좋아요
+
+                        </button>
+
+
+                        <span
+                            id="novel-like-count"
+                            class="novel-like-count"
+                        >
+                            좋아요 <strong>0</strong>
+                        </span>
+
+                    </div>
+
+
                 </div>
 
 
@@ -428,6 +765,12 @@ async function loadNovel() {
     `;
 
 
+    // =====================================
+    // 좋아요 정보 불러오기
+    // =====================================
+
+    await loadLikeInfo();
+
 
     // =====================================
     // 회차 목록
@@ -436,7 +779,6 @@ async function loadNovel() {
     await loadEpisodes();
 
 }
-
 
 
 // ========================================
@@ -455,7 +797,6 @@ async function loadEpisodes() {
         document.getElementById(
             "episode-count"
         );
-
 
 
     const result =
@@ -477,7 +818,6 @@ async function loadEpisodes() {
                     ascending: true
                 }
             );
-
 
 
     if (result.error) {
@@ -503,15 +843,12 @@ async function loadEpisodes() {
     }
 
 
-
     const episodes =
         result.data || [];
 
 
-
     episodeCount.textContent =
         episodes.length + "화";
-
 
 
     // =====================================
@@ -535,7 +872,6 @@ async function loadEpisodes() {
     }
 
 
-
     // =====================================
     // 첫 화 버튼
     // =====================================
@@ -552,7 +888,6 @@ async function loadEpisodes() {
         </a>
 
     `;
-
 
 
     // =====================================
@@ -613,23 +948,30 @@ async function loadEpisodes() {
     );
 
 
-
     episodeList.innerHTML =
         html;
 
 }
 
 
-
 // ========================================
 // 실행
 // ========================================
 
-loadNovel();
+async function init() {
+
+    await loadCurrentUser();
+
+    await loadNovel();
+
+}
+
+
+init();
 
 </script>
 
 
 </body>
 
-</html> 
+</html>
