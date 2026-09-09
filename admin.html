@@ -35,8 +35,6 @@
             <a href="search.html">
                 검색
             </a>
-            
- </a>
 
         </nav>
 
@@ -73,10 +71,134 @@
             </h1>
 
             <p class="admin-description">
-                NOVEL 사이트의 작가 신청을 관리할 수 있습니다.
+                NOVEL 사이트의 작가 신청과 사이트 통계를 관리할 수 있습니다.
             </p>
 
         </div>
+
+
+
+        <!-- 사이트 통계 -->
+
+        <section class="admin-section">
+
+
+            <div class="admin-section-header">
+
+                <div>
+
+                    <p class="admin-section-small">
+                        SITE STATISTICS
+                    </p>
+
+                    <h2>
+                        사이트 통계
+                    </h2>
+
+                    <p class="admin-section-description">
+                        NOVEL 사이트의 접속 및 회원 통계를 확인할 수 있습니다.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="site-statistics">
+
+
+                <!-- 총 접속 횟수 -->
+
+                <div class="stat-card">
+
+                    <div class="stat-card-label">
+                        총 접속 횟수
+                    </div>
+
+                    <div
+                        id="total-visits"
+                        class="stat-card-number">
+                        -
+                    </div>
+
+                    <div class="stat-card-description">
+                        지금까지 기록된 전체 방문
+                    </div>
+
+                </div>
+
+
+
+                <!-- 오늘 접속 -->
+
+                <div class="stat-card">
+
+                    <div class="stat-card-label">
+                        오늘 접속
+                    </div>
+
+                    <div
+                        id="today-visits"
+                        class="stat-card-number">
+                        -
+                    </div>
+
+                    <div class="stat-card-description">
+                        오늘 기록된 방문
+                    </div>
+
+                </div>
+
+
+
+                <!-- 고유 방문자 -->
+
+                <div class="stat-card">
+
+                    <div class="stat-card-label">
+                        고유 방문자
+                    </div>
+
+                    <div
+                        id="unique-visitors"
+                        class="stat-card-number">
+                        -
+                    </div>
+
+                    <div class="stat-card-description">
+                        서로 다른 방문자
+                    </div>
+
+                </div>
+
+
+
+                <!-- 가입자 -->
+
+                <div class="stat-card">
+
+                    <div class="stat-card-label">
+                        가입 회원
+                    </div>
+
+                    <div
+                        id="total-users"
+                        class="stat-card-number">
+                        -
+                    </div>
+
+                    <div class="stat-card-description">
+                        현재 가입된 회원
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+        </section>
 
 
 
@@ -109,7 +231,9 @@
 
             <!-- 신청 목록 -->
 
-            <div id="application-list" class="application-list">
+            <div
+                id="application-list"
+                class="application-list">
 
                 <div class="application-loading">
                     신청 목록을 불러오는 중입니다...
@@ -135,8 +259,6 @@
 */
 
 async function checkAdmin() {
-
-    // 현재 로그인한 사용자 확인
 
     const userResult =
         await supabaseClient.auth.getUser();
@@ -207,6 +329,93 @@ async function checkAdmin() {
 
 
 /*
+    사이트 통계 불러오기
+*/
+
+async function loadSiteStatistics() {
+
+    const totalVisits =
+        document.getElementById(
+            "total-visits"
+        );
+
+    const todayVisits =
+        document.getElementById(
+            "today-visits"
+        );
+
+    const uniqueVisitors =
+        document.getElementById(
+            "unique-visitors"
+        );
+
+    const totalUsers =
+        document.getElementById(
+            "total-users"
+        );
+
+
+    const result =
+        await supabaseClient.rpc(
+            "get_site_statistics"
+        );
+
+
+    if (result.error) {
+
+        console.error(
+            "사이트 통계 오류:",
+            result.error
+        );
+
+
+        totalVisits.textContent = "-";
+        todayVisits.textContent = "-";
+        uniqueVisitors.textContent = "-";
+        totalUsers.textContent = "-";
+
+
+        return;
+    }
+
+
+    const statistics =
+        result.data[0];
+
+
+    if (!statistics) {
+        return;
+    }
+
+
+    totalVisits.textContent =
+        Number(
+            statistics.total_visits
+        ).toLocaleString("ko-KR");
+
+
+    todayVisits.textContent =
+        Number(
+            statistics.today_visits
+        ).toLocaleString("ko-KR");
+
+
+    uniqueVisitors.textContent =
+        Number(
+            statistics.total_unique_visitors
+        ).toLocaleString("ko-KR");
+
+
+    totalUsers.textContent =
+        Number(
+            statistics.total_users
+        ).toLocaleString("ko-KR");
+
+}
+
+
+
+/*
     작가 신청 목록 불러오기
 */
 
@@ -217,8 +426,6 @@ async function loadApplications() {
             "application-list"
         );
 
-
-    // 신청 목록 가져오기
 
     const result =
         await supabaseClient
@@ -506,8 +713,6 @@ async function approveWriter(
     );
 
 
-    // 목록 새로고침
-
     await loadApplications();
 
 }
@@ -564,8 +769,6 @@ async function rejectWriter(
     );
 
 
-    // 목록 새로고침
-
     await loadApplications();
 
 }
@@ -586,6 +789,13 @@ async function startAdminPage() {
         return;
     }
 
+
+    // 사이트 통계
+
+    await loadSiteStatistics();
+
+
+    // 작가 신청 목록
 
     await loadApplications();
 
