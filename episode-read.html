@@ -306,6 +306,15 @@ let currentUser = null;
 
 
 // ========================================
+// 댓글 좋아요 처리 중인 댓글
+// ========================================
+
+const likingComments =
+    new Set();
+
+
+
+// ========================================
 // HTML 특수문자 처리
 // ========================================
 
@@ -430,6 +439,97 @@ function updateCommentForm() {
 
 
 // ========================================
+// 댓글 좋아요 데이터 가져오기
+// ========================================
+
+async function loadCommentLikes(
+    commentIds
+) {
+
+    const likesMap = {};
+
+
+    // 댓글이 없으면 종료
+
+    if (
+        !commentIds ||
+        commentIds.length === 0
+    ) {
+
+        return likesMap;
+
+    }
+
+
+    const result =
+        await supabaseClient
+            .from("comment_likes")
+            .select(
+                "comment_id, user_id"
+            )
+            .in(
+                "comment_id",
+                commentIds
+            );
+
+
+    if (result.error) {
+
+        console.error(
+            "댓글 좋아요 불러오기 오류:",
+            result.error
+        );
+
+
+        return likesMap;
+
+    }
+
+
+    const likes =
+        result.data || [];
+
+
+    likes.forEach(
+        function (like) {
+
+            if (
+                !likesMap[like.comment_id]
+            ) {
+
+                likesMap[like.comment_id] = {
+                    count: 0,
+                    likedByMe: false
+                };
+
+            }
+
+
+            likesMap[like.comment_id].count++;
+
+
+            if (
+                currentUser &&
+                like.user_id === currentUser.id
+            ) {
+
+                likesMap[
+                    like.comment_id
+                ].likedByMe = true;
+
+            }
+
+        }
+    );
+
+
+    return likesMap;
+
+}
+
+
+
+// ========================================
 // 댓글 불러오기
 // ========================================
 
@@ -527,6 +627,32 @@ async function loadComments() {
 
 
     // =====================================
+    // 댓글 ID 가져오기
+    // =====================================
+
+    const commentIds =
+        comments.map(
+            function (comment) {
+
+                return comment.id;
+
+            }
+        );
+
+
+
+    // =====================================
+    // 좋아요 데이터 가져오기
+    // =====================================
+
+    const likesMap =
+        await loadCommentLikes(
+            commentIds
+        );
+
+
+
+    // =====================================
     // 댓글 출력
     // =====================================
 
@@ -556,6 +682,26 @@ async function loadComments() {
                 currentUser &&
                 currentUser.id ===
                     comment.user_id;
+
+
+
+            // =================================
+            // 좋아요 정보
+            // =================================
+
+            const likeInfo =
+                likesMap[comment.id] || {
+                    count: 0,
+                    likedByMe: false
+                };
+
+
+            const likeCount =
+                likeInfo.count;
+
+
+            const likedByMe =
+                likeInfo.likedByMe;
 
 
 
@@ -623,21 +769,67 @@ async function loadComments() {
                     </div>
 
 
-                    ${
-                        isMine
-                        ? `
+                    <!-- =================================
+                         댓글 하단 버튼
+                    ================================== -->
 
-                            <button
-                                type="button"
-                                class="episode-comment-delete"
-                                onclick="deleteComment('${comment.id}')"
+                    <div
+                        class="episode-comment-actions"
+                    >
+
+
+                        <!-- 좋아요 -->
+
+                        <button
+                            type="button"
+                            class="episode-comment-like ${
+                                likedByMe
+                                    ? "liked"
+                                    : ""
+                            }"
+                            id="comment-like-${comment.id}"
+                            onclick="toggleCommentLike('${comment.id}')"
+                        >
+
+                            <span class="comment-like-icon">
+
+                                ${
+                                    likedByMe
+                                        ? "❤️"
+                                        : "♡"
+                                }
+
+                            </span>
+
+
+                            <span
+                                class="comment-like-count"
+                                id="comment-like-count-${comment.id}"
                             >
-                                삭제
-                            </button>
+                                ${likeCount}
+                            </span>
 
-                        `
-                        : ""
-                    }
+                        </button>
+
+
+                        ${
+                            isMine
+                            ? `
+
+                                <button
+                                    type="button"
+                                    class="episode-comment-delete"
+                                    onclick="deleteComment('${comment.id}')"
+                                >
+                                    삭제
+                                </button>
+
+                            `
+                            : ""
+                        }
+
+                    </div>
+
 
                 </div>
 
@@ -650,6 +842,272 @@ async function loadComments() {
 
     commentList.innerHTML =
         html;
+
+}
+
+
+
+// ========================================
+// 댓글 좋아요 / 취소
+// ========================================
+
+async function toggleCommentLike(
+    commentId
+) {
+
+    // ----------------------------------------
+    // 로그인 확인
+    // ----------------------------------------
+
+    if (!currentUser) {
+
+        alert(
+            "좋아요를 누르려면 로그인하세요."
+        );
+
+        return;
+
+    }
+
+
+    // ----------------------------------------
+    // 중복 클릭 방지
+    // ----------------------------------------
+
+    if (
+        likingComments.has(commentId)
+    ) {
+
+        return;
+
+    }
+
+
+    likingComments.add(
+        commentId
+    );
+
+
+    const button =
+        document.getElementById(
+            "comment-like-" +
+            commentId
+        );
+
+
+    const countElement =
+        document.getElementById(
+            "comment-like-count-" +
+            commentId
+        );
+
+
+    try {
+
+        // ====================================
+        // 현재 좋아요 여부 확인
+        // ====================================
+
+        const existingResult =
+            await supabaseClient
+                .from("comment_likes")
+                .select("id")
+                .eq(
+                    "comment_id",
+                    commentId
+                )
+                .eq(
+                    "user_id",
+                    currentUser.id
+                )
+                .maybeSingle();
+
+
+        if (existingResult.error) {
+
+            throw new Error(
+                existingResult.error.message
+            );
+
+        }
+
+
+        // ====================================
+        // 이미 좋아요한 경우 → 취소
+        // ====================================
+
+        if (existingResult.data) {
+
+            const deleteResult =
+                await supabaseClient
+                    .from("comment_likes")
+                    .delete()
+                    .eq(
+                        "id",
+                        existingResult.data.id
+                    )
+                    .eq(
+                        "user_id",
+                        currentUser.id
+                    );
+
+
+            if (deleteResult.error) {
+
+                throw new Error(
+                    deleteResult.error.message
+                );
+
+            }
+
+        }
+
+        // ====================================
+        // 좋아요하지 않은 경우 → 추가
+        // ====================================
+
+        else {
+
+            const insertResult =
+                await supabaseClient
+                    .from("comment_likes")
+                    .insert({
+
+                        comment_id:
+                            commentId,
+
+                        user_id:
+                            currentUser.id
+
+                    });
+
+
+            if (insertResult.error) {
+
+                // 혹시 중복 좋아요라면
+                // 이미 눌린 것으로 처리
+
+                if (
+                    insertResult.error.code !==
+                    "23505"
+                ) {
+
+                    throw new Error(
+                        insertResult.error.message
+                    );
+
+                }
+
+            }
+
+        }
+
+
+        // ====================================
+        // 변경된 좋아요 정보 다시 가져오기
+        // ====================================
+
+        const likesResult =
+            await supabaseClient
+                .from("comment_likes")
+                .select(
+                    "id, user_id"
+                )
+                .eq(
+                    "comment_id",
+                    commentId
+                );
+
+
+        if (likesResult.error) {
+
+            throw new Error(
+                likesResult.error.message
+            );
+
+        }
+
+
+        const likes =
+            likesResult.data || [];
+
+
+        const likeCount =
+            likes.length;
+
+
+        const likedByMe =
+            likes.some(
+                function (like) {
+
+                    return (
+                        like.user_id ===
+                        currentUser.id
+                    );
+
+                }
+            );
+
+
+
+        // ====================================
+        // 화면 업데이트
+        // ====================================
+
+        if (countElement) {
+
+            countElement.textContent =
+                likeCount;
+
+        }
+
+
+        if (button) {
+
+            button.classList.toggle(
+                "liked",
+                likedByMe
+            );
+
+
+            const icon =
+                button.querySelector(
+                    ".comment-like-icon"
+                );
+
+
+            if (icon) {
+
+                icon.textContent =
+                    likedByMe
+                        ? "❤️"
+                        : "♡";
+
+            }
+
+        }
+
+
+    } catch (error) {
+
+        console.error(
+            "댓글 좋아요 처리 오류:",
+            error
+        );
+
+
+        alert(
+            "좋아요 처리 중 오류가 발생했습니다.\n\n" +
+            error.message
+        );
+
+    } finally {
+
+        likingComments.delete(
+            commentId
+        );
+
+    }
 
 }
 
@@ -768,7 +1226,6 @@ async function submitComment() {
     // =====================================
 
     input.value = "";
-
 
 
     button.disabled =
