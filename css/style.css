@@ -1,0 +1,3709 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, "Noto Sans KR", sans-serif;
+    color: #171717;
+    background: #ffffff;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+
+/* HEADER */
+
+header {
+    width: 100%;
+    border-bottom: 1px solid #eeeeee;
+    background: white;
+}
+
+.header-inner {
+    max-width: 1200px;
+    height: 72px;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    padding: 0 30px;
+}
+
+.logo {
+    font-size: 23px;
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+
+nav {
+    display: flex;
+    gap: 30px;
+    margin-left: 55px;
+}
+
+nav a {
+    font-size: 14px;
+    color: #555;
+}
+
+nav a:hover {
+    color: #000;
+}
+
+.header-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.search-btn {
+    border: none;
+    background: none;
+    font-size: 25px;
+    cursor: pointer;
+}
+
+.login-btn {
+    border: 1px solid #222;
+    border-radius: 5px;
+    padding: 9px 17px;
+    font-size: 13px;
+}
+
+
+/* HERO */
+
+.hero {
+    max-width: 1200px;
+    min-height: 430px;
+    margin: auto;
+    padding: 100px 30px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #eeeeee;
+}
+
+.hero-small,
+.section-small {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: #888;
+    margin-bottom: 15px;
+}
+
+.hero h1 {
+    font-size: 52px;
+    line-height: 1.25;
+    letter-spacing: -3px;
+    margin-bottom: 20px;
+}
+
+.hero-description {
+    color: #777;
+    font-size: 15px;
+    margin-bottom: 32px;
+}
+
+.main-btn {
+    display: inline-block;
+    background: #171717;
+    color: white;
+    padding: 14px 25px;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+
+/* SECTION */
+
+.section,
+.latest {
+    max-width: 1200px;
+    margin: auto;
+    padding: 80px 30px;
+}
+
+.section-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    margin-bottom: 30px;
+}
+
+.section-title h2 {
+    font-size: 27px;
+    letter-spacing: -1px;
+}
+
+.section-title > a {
+    font-size: 13px;
+    color: #777;
+}
+
+
+/* NOVEL CARDS */
+
+.novel-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 25px;
+}
+
+.novel-card {
+    cursor: pointer;
+}
+
+.cover {
+    height: 300px;
+    border-radius: 5px;
+    background: #f3f3f3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 25px;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+.cover-one {
+    background: #eeeeee;
+}
+
+.cover-two {
+    background: #e6e6e6;
+}
+
+.cover-three {
+    background: #f2f2f2;
+}
+
+.cover-four {
+    background: #dedede;
+}
+
+.novel-info {
+    padding-top: 15px;
+}
+
+.novel-info h3 {
+    font-size: 16px;
+    margin-bottom: 7px;
+}
+
+.novel-info p {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 7px;
+}
+
+.novel-info span {
+    font-size: 12px;
+    color: #999;
+}
+
+
+/* LATEST */
+
+.latest {
+    border-top: 1px solid #eeeeee;
+}
+
+.latest-list {
+    border-top: 1px solid #ddd;
+}
+
+.latest-item {
+    min-height: 90px;
+    border-bottom: 1px solid #eeeeee;
+    display: flex;
+    align-items: center;
+    padding: 20px 10px;
+}
+
+.latest-item div {
+    flex: 1;
+}
+
+.latest-item h3 {
+    font-size: 15px;
+    margin-bottom: 8px;
+}
+
+.latest-item p {
+    font-size: 13px;
+    color: #777;
+}
+
+.latest-item span,
+.latest-item b {
+    width: 120px;
+    font-size: 12px;
+    color: #888;
+    font-weight: normal;
+}
+
+
+/* FOOTER */
+
+footer {
+    border-top: 1px solid #eeeeee;
+    padding: 45px 30px;
+}
+
+.footer-inner {
+    max-width: 1200px;
+    margin: auto;
+}
+
+.footer-inner strong {
+    font-size: 20px;
+}
+
+.footer-inner p {
+    color: #888;
+    font-size: 13px;
+    margin: 10px 0 25px;
+}
+
+.footer-inner small {
+    color: #aaa;
+    font-size: 11px;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 800px) {
+
+    nav {
+        display: none;
+    }
+
+    .hero {
+        padding: 70px 25px;
+    }
+
+    .hero h1 {
+        font-size: 40px;
+    }
+
+    .section,
+    .latest {
+        padding: 60px 20px;
+    }
+
+    .novel-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    .cover {
+        height: 240px;
+    }
+
+    .latest-item span {
+        display: none;
+    }
+
+    .latest-item b {
+        width: auto;
+    }
+}
+/* AUTH */
+
+.auth-page {
+    min-height: calc(100vh - 72px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 20px;
+}
+
+.auth-box {
+    width: 100%;
+    max-width: 420px;
+}
+
+.auth-box h1 {
+    font-size: 32px;
+    letter-spacing: -1px;
+    margin-bottom: 12px;
+}
+
+.auth-description {
+    color: #888;
+    font-size: 14px;
+    margin-bottom: 35px;
+}
+
+.auth-box label {
+    display: block;
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    margin-top: 20px;
+}
+
+.auth-box input {
+    width: 100%;
+    height: 48px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 0 14px;
+    font-size: 14px;
+    outline: none;
+}
+
+.auth-box input:focus {
+    border-color: #222;
+}
+
+.auth-submit {
+    width: 100%;
+    height: 50px;
+    margin-top: 30px;
+    border: none;
+    border-radius: 5px;
+    background: #171717;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.auth-submit:hover {
+    background: #333;
+}
+
+.auth-link {
+    text-align: center;
+    margin-top: 25px;
+    font-size: 13px;
+    color: #888;
+}
+
+.auth-link a {
+    color: #171717;
+    font-weight: bold;
+}/* =========================
+   ACCOUNT
+========================= */
+
+.account-page {
+    min-height: calc(100vh - 72px);
+    display: flex;
+    justify-content: center;
+    padding: 80px 20px;
+}
+
+.account-box {
+    width: 100%;
+    max-width: 600px;
+}
+
+.account-small {
+    font-size: 12px;
+    color: #999;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+}
+
+.account-box h1 {
+    font-size: 34px;
+    margin-bottom: 35px;
+}
+
+.account-card {
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    background: #fff;
+}
+
+.account-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 65px;
+    padding: 0 22px;
+    border-bottom: 1px solid #eee;
+}
+
+.account-row:last-child {
+    border-bottom: none;
+}
+
+.account-row span {
+    color: #888;
+    font-size: 14px;
+}
+
+.account-row strong {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.writer-apply-button {
+    width: 100%;
+    height: 52px;
+    margin-top: 20px;
+    border: none;
+    border-radius: 6px;
+    background: #171717;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.writer-apply-button:hover {
+    background: #333;
+}
+
+.writer-apply-button:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+.writer-message {
+    margin-top: 20px;
+    padding: 20px;
+    border: 1px solid #e5e5e5;
+    border-radius: 6px;
+    color: #666;
+    font-size: 14px;
+    line-height: 1.8;
+    text-align: center;
+}
+
+.account-error {
+    color: #d33;
+}.writer-page {
+    min-height: calc(100vh - 72px);
+    display: flex;
+    justify-content: center;
+    padding: 80px 20px;
+}
+
+.writer-box {
+    width: 100%;
+    max-width: 700px;
+}
+
+.writer-box h1 {
+    font-size: 34px;
+    margin-bottom: 35px;
+}
+
+.writer-welcome {
+    padding: 30px;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.writer-welcome h2 {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.writer-welcome p {
+    color: #888;
+    font-size: 14px;
+}
+
+.writer-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.writer-action {
+    display: block;
+    padding: 25px;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #171717;
+    transition: 0.2s;
+}
+
+.writer-action:hover {
+    border-color: #999;
+    transform: translateY(-2px);
+}
+
+.writer-action strong {
+    display: block;
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.writer-action span {
+    color: #888;
+    font-size: 13px;
+}
+
+.writer-back-button {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 20px;
+    background: #171717;
+    color: white;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 13px;
+}
+
+@media (max-width: 600px) {
+
+    .writer-actions {
+        grid-template-columns: 1fr;
+    }
+
+}/* =========================
+   로그인 사용자 메뉴
+========================= */
+
+.user-menu {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.user-menu a {
+    display: inline-flex;
+    align-items: center;
+    height: 36px;
+    padding: 0 13px;
+    border: 1px solid #e5e5e5;
+    border-radius: 6px;
+    background: #fff;
+    color: #333;
+    text-decoration: none;
+    font-size: 13px;
+    white-space: nowrap;
+    transition: 0.2s;
+}
+
+.user-menu a:hover {
+    border-color: #bbb;
+    background: #f8f8f8;
+}
+
+.user-menu .user-email {
+    margin-left: 4px;
+    color: #888;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.user-menu button {
+    height: 36px;
+    padding: 0 13px;
+    border: 1px solid #e5e5e5;
+    border-radius: 6px;
+    background: #fff;
+    color: #555;
+    font-size: 13px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: 0.2s;
+}
+
+.user-menu button:hover {
+    border-color: #bbb;
+    background: #f8f8f8;
+}
+
+.user-menu button:disabled {
+    opacity: 0.5;
+    cursor: default;
+}/* =========================
+   소설 작성 페이지
+========================= */
+
+.write-page {
+    min-height: calc(100vh - 72px);
+    display: flex;
+    justify-content: center;
+    padding: 80px 20px;
+}
+
+.write-box {
+    width: 100%;
+    max-width: 800px;
+}
+
+.write-box h1 {
+    font-size: 34px;
+    margin-bottom: 10px;
+}
+
+.write-description {
+    color: #888;
+    font-size: 14px;
+    margin-bottom: 40px;
+}
+
+.write-field {
+    margin-bottom: 25px;
+}
+
+.write-field label {
+    display: block;
+    margin-bottom: 9px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.write-field input,
+.write-field select,
+.write-field textarea {
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 13px 14px;
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.write-field input,
+.write-field select {
+    height: 48px;
+}
+
+.write-field textarea {
+    resize: vertical;
+    line-height: 1.8;
+}
+
+.write-field input:focus,
+.write-field select:focus,
+.write-field textarea:focus {
+    border-color: #222;
+}
+
+.novel-content-input {
+    min-height: 500px;
+}
+
+.write-submit {
+    width: 100%;
+    height: 52px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 6px;
+    background: #171717;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.write-submit:hover {
+    background: #333;
+}
+
+.write-submit:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+.write-message {
+    margin-top: 20px;
+    text-align: center;
+    color: #555;
+    font-size: 14px;
+}/* 소설 목록 */
+
+.novels-page {
+    min-height: calc(100vh - 72px);
+    padding: 80px 20px;
+}
+
+.novels-box {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.novels-small {
+    font-size: 12px;
+    color: #999;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+}
+
+.novels-box h1 {
+    font-size: 34px;
+    margin-bottom: 35px;
+}
+
+#novel-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.novel-card {
+    display: block;
+    padding: 25px;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    background: #fff;
+    color: #171717;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.novel-card:hover {
+    border-color: #aaa;
+    transform: translateY(-2px);
+}
+
+.novel-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.novel-genre {
+    font-size: 12px;
+    color: #666;
+}
+
+.novel-date {
+    font-size: 12px;
+    color: #aaa;
+}
+
+.novel-card h2 {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.novel-description {
+    color: #777;
+    font-size: 14px;
+    line-height: 1.7;
+    margin-bottom: 18px;
+}
+
+.novel-author {
+    font-size: 13px;
+    color: #999;
+}
+
+.novel-author strong {
+    margin-left: 5px;
+    color: #444;
+    font-weight: 500;
+}
+
+.novel-loading,
+.novel-error,
+.novel-empty {
+    padding: 40px;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    text-align: center;
+    color: #999;
+    font-size: 14px;
+}
+
+.novel-error {
+    color: #d33;
+}/* 소설 본문 가독성 개선 */
+
+.novel-detail-content {
+    margin-top: 55px;
+    padding: 10px 5px;
+    font-size: 17px;
+    line-height: 2.2;
+    color: #333;
+    word-break: break-word;
+}
+
+/* 본문의 줄바꿈을 더 확실하게 구분 */
+.novel-detail-content br {
+    display: block;
+    content: "";
+    margin-bottom: 8px;
+}
+
+/* 작품 소개와 본문 사이 구분 */
+.novel-detail-description {
+    margin-top: 35px;
+    margin-bottom: 45px;
+    padding: 28px 30px;
+}
+
+/* 본문 시작 부분 */
+.novel-detail-content::before {
+    content: "본문";
+    display: block;
+    padding-bottom: 15px;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #171717;
+    font-size: 15px;
+    font-weight: 600;
+    color: #171717;
+}
+
+/* 글 제목과 정보 구분 */
+.novel-detail-header {
+    padding-bottom: 30px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* 작가 / 날짜 간격 */
+.novel-detail-meta {
+    display: flex;
+    gap: 25px;
+    margin-top: 5px;
+}/* 소설 목록 버튼 영역 구분 */
+
+.novel-detail-bottom {
+    margin-top: 80px;
+    padding-top: 30px;
+    border-top: 1px solid #ddd;
+    text-align: center;
+}
+
+.novel-detail-bottom a {
+    display: inline-block;
+    padding: 12px 22px;
+    border: 1px solid #e5e5e5;
+    border-radius: 6px;
+    background: #fff;
+    color: #555;
+    font-size: 14px;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.novel-detail-bottom a:hover {
+    border-color: #aaa;
+    background: #f8f8f8;
+}.novel-detail-content {
+    font-size: 20px;
+    line-height: 2.3;
+}/* 내 작품 관리 */
+
+.writer-small {
+    font-size: 12px;
+    color: #999;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+}
+
+.my-novels {
+    margin-top: 40px;
+}
+
+.my-novels-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.my-novels-header h2 {
+    font-size: 20px;
+}
+
+.my-novels-header span {
+    color: #999;
+    font-size: 13px;
+}
+
+.my-novel-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+
+    padding: 22px 25px;
+    margin-bottom: 10px;
+
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+
+    background: #fff;
+    color: #171717;
+    text-decoration: none;
+
+    transition: 0.2s;
+}
+
+.my-novel-card:hover {
+    border-color: #aaa;
+    transform: translateY(-2px);
+}
+
+.my-novel-genre {
+    font-size: 12px;
+    color: #888;
+}
+
+.my-novel-card h3 {
+    margin-top: 8px;
+    margin-bottom: 8px;
+
+    font-size: 18px;
+}
+
+.my-novel-card p {
+    color: #888;
+    font-size: 13px;
+    line-height: 1.6;
+
+    margin: 0;
+}
+
+.my-novel-date {
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    color: #aaa;
+    font-size: 12px;
+}
+
+.my-novel-date span {
+    color: #555;
+    font-size: 18px;
+}
+
+.my-novels-empty {
+    padding: 40px 20px;
+
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+
+    text-align: center;
+
+    color: #999;
+    font-size: 14px;
+}
+
+.writer-error {
+    color: #d33;
+}
+
+.writer-no-access {
+    padding: 35px;
+
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+
+    text-align: center;
+}
+
+.writer-no-access h2 {
+    margin-bottom: 10px;
+    font-size: 20px;
+}
+
+.writer-no-access p {
+    color: #888;
+    font-size: 14px;
+}.my-novel-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+
+    padding: 22px 25px;
+    margin-bottom: 10px;
+
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+
+    background: #fff;
+
+    transition: 0.2s;
+}
+
+.my-novel-card:hover {
+    border-color: #aaa;
+    transform: translateY(-2px);
+}
+
+.my-novel-info {
+    flex: 1;
+    color: #171717;
+    text-decoration: none;
+}
+
+.my-novel-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.my-novel-edit,
+.my-novel-delete {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 34px;
+    padding: 0 12px;
+
+    border: 1px solid #e5e5e5;
+    border-radius: 5px;
+
+    background: #fff;
+    color: #555;
+
+    font-size: 12px;
+    text-decoration: none;
+
+    cursor: pointer;
+}
+
+.my-novel-edit:hover,
+.my-novel-delete:hover {
+    background: #f7f7f7;
+    border-color: #bbb;
+}
+
+.my-novel-delete {
+    font-family: inherit;
+}
+
+.my-novel-date {
+    color: #aaa;
+    font-size: 12px;
+}/* 소설 수정 버튼 */
+
+.edit-buttons {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    margin-top: 25px;
+}
+
+.edit-cancel-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 48px;
+    padding: 0 25px;
+
+    border: 1px solid #e5e5e5;
+    border-radius: 6px;
+
+    background: #fff;
+    color: #555;
+
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.edit-cancel-button:hover {
+    background: #f7f7f7;
+    border-color: #bbb;
+}
+
+.edit-buttons button {
+    height: 48px;
+    padding: 0 28px;
+
+    border: none;
+    border-radius: 6px;
+
+    background: #171717;
+    color: white;
+
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.edit-buttons button:hover {
+    background: #333;
+}
+
+.edit-buttons button:disabled {
+    opacity: 0.5;
+    cursor: default;
+}/* 회차 작성 */
+
+.episode-novel-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    margin-bottom: 30px;
+    padding: 15px 18px;
+
+    border: 1px solid #e5e5e5;
+    border-radius: 6px;
+
+    background: #fafafa;
+}
+
+.episode-novel-info span {
+    color: #999;
+    font-size: 13px;
+}
+
+.episode-novel-info strong {
+    font-size: 14px;
+    font-weight: 500;
+}.my-novel-episode {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 34px;
+    padding: 0 12px;
+
+    border: 1px solid #e5e5e5;
+    border-radius: 5px;
+
+    background: #fff;
+    color: #555;
+
+    font-size: 12px;
+    text-decoration: none;
+
+    cursor: pointer;
+}
+
+.my-novel-episode:hover {
+    background: #f7f7f7;
+    border-color: #bbb;
+}.episode-novel-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 30px;
+    padding: 15px 18px;
+    border: 1px solid #e5e5e5;
+    border-radius: 6px;
+    background: #fafafa;
+}
+
+.episode-novel-info span {
+    color: #999;
+    font-size: 13px;
+}
+
+.episode-novel-info strong {
+    font-size: 14px;
+    font-weight: 500;
+}/* ========================================
+   회차 작성 화면
+======================================== */
+
+.episode-page,
+.write-page {
+    background: #fafafa;
+}
+
+
+/* 작품 정보 */
+
+#novel-info {
+    margin-bottom: 30px;
+}
+
+
+/* 입력 영역 */
+
+.write-field {
+    margin-bottom: 28px;
+}
+
+.write-field label {
+    display: block;
+
+    margin-bottom: 10px;
+
+    color: #222;
+
+    font-size: 14px;
+    font-weight: 600;
+}
+
+
+/* 제목 / 회차 번호 입력 */
+
+.write-field input {
+    width: 100%;
+    height: 52px;
+
+    padding: 0 16px;
+
+    box-sizing: border-box;
+
+    border: 1px solid #ddd;
+    border-radius: 7px;
+
+    background: #fff;
+
+    color: #222;
+
+    font-family: inherit;
+    font-size: 15px;
+
+    outline: none;
+}
+
+.write-field input:focus {
+    border-color: #999;
+}
+
+
+/* 본문 입력창 */
+
+.write-field textarea {
+    width: 100%;
+
+    padding: 20px;
+
+    box-sizing: border-box;
+
+    border: 1px solid #ddd;
+    border-radius: 7px;
+
+    background: #fff;
+
+    color: #222;
+
+    font-family: inherit;
+
+    /* 본문 글자 */
+    font-size: 17px;
+
+    /* 줄 사이 간격 */
+    line-height: 2;
+
+    /* 글자 사이 간격 */
+    letter-spacing: 0.2px;
+
+    resize: vertical;
+
+    outline: none;
+}
+
+
+/* 본문 입력창 클릭했을 때 */
+
+.write-field textarea:focus {
+    border-color: #999;
+}
+
+
+/* 본문 입력창 안내 문구 */
+
+.write-field textarea::placeholder {
+    color: #aaa;
+    line-height: 2;
+}
+
+
+/* 회차 번호 입력 */
+
+#episode-number {
+    max-width: 180px;
+}
+
+
+/* 작품 이름 표시 */
+
+.episode-novel-info {
+    display: flex;
+    align-items: center;
+
+    gap: 15px;
+
+    padding: 17px 20px;
+
+    border: 1px solid #e5e5e5;
+    border-radius: 7px;
+
+    background: #fff;
+}
+
+.episode-novel-info span {
+    color: #999;
+
+    font-size: 13px;
+}
+
+.episode-novel-info strong {
+    color: #222;
+
+    font-size: 15px;
+    font-weight: 600;
+}
+
+
+/* 저장 / 취소 버튼 */
+
+.edit-buttons {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+
+    gap: 10px;
+
+    margin-top: 35px;
+}
+
+.edit-cancel-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 48px;
+
+    padding: 0 24px;
+
+    border: 1px solid #ddd;
+    border-radius: 7px;
+
+    background: #fff;
+
+    color: #555;
+
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.edit-cancel-button:hover {
+    background: #f5f5f5;
+}
+
+.edit-buttons button {
+    height: 48px;
+
+    padding: 0 28px;
+
+    border: none;
+    border-radius: 7px;
+
+    background: #171717;
+
+    color: #fff;
+
+    font-family: inherit;
+    font-size: 14px;
+
+    cursor: pointer;
+}
+
+.edit-buttons button:hover {
+    background: #333;
+}
+
+.edit-buttons button:disabled {
+    opacity: 0.5;
+    cursor: default;
+}/* ========================================
+   회차 관리 페이지
+======================================== */
+
+.episode-page {
+    min-height: calc(100vh - 72px);
+
+    padding: 70px 20px 100px;
+
+    background: #fafafa;
+}
+
+.episode-box {
+    width: 100%;
+    max-width: 850px;
+
+    margin: 0 auto;
+}
+
+.episode-box h1 {
+    margin-bottom: 35px;
+
+    font-size: 32px;
+    font-weight: 600;
+}
+
+
+/* ========================================
+   상단 영역
+======================================== */
+
+.episode-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 18px;
+}
+
+.episode-top p {
+    margin: 0;
+
+    color: #888;
+
+    font-size: 14px;
+}
+
+
+/* 새 회차 작성 버튼 */
+
+.episode-new-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 42px;
+
+    padding: 0 18px;
+
+    border-radius: 6px;
+
+    background: #171717;
+    color: #fff;
+
+    font-size: 13px;
+
+    text-decoration: none;
+
+    transition: 0.2s;
+}
+
+.episode-new-button:hover {
+    background: #333;
+}
+
+
+/* ========================================
+   회차 목록
+======================================== */
+
+#episode-list {
+    width: 100%;
+}
+
+
+/* 회차 카드 */
+
+.episode-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 20px;
+
+    min-height: 82px;
+
+    margin-bottom: 10px;
+    padding: 18px 22px;
+
+    box-sizing: border-box;
+
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+
+    background: #fff;
+
+    transition: 0.2s;
+}
+
+.episode-card:hover {
+    border-color: #bbb;
+
+    transform: translateY(-1px);
+}
+
+
+/* ========================================
+   회차 정보
+======================================== */
+
+.episode-info {
+    flex: 1;
+
+    min-width: 0;
+
+    color: #171717;
+
+    text-decoration: none;
+}
+
+.episode-number {
+    display: block;
+
+    margin-bottom: 6px;
+
+    color: #999;
+
+    font-size: 12px;
+}
+
+.episode-info h2 {
+    margin: 0 0 6px;
+
+    font-size: 17px;
+    font-weight: 500;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.episode-date {
+    color: #aaa;
+
+    font-size: 12px;
+}
+
+
+/* ========================================
+   수정 / 삭제 버튼
+======================================== */
+
+.episode-actions {
+    display: flex;
+    align-items: center;
+
+    gap: 7px;
+
+    flex-shrink: 0;
+}
+
+.episode-edit-button,
+.episode-delete-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 34px;
+
+    padding: 0 12px;
+
+    box-sizing: border-box;
+
+    border: 1px solid #e5e5e5;
+    border-radius: 5px;
+
+    background: #fff;
+    color: #555;
+
+    font-family: inherit;
+    font-size: 12px;
+
+    text-decoration: none;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.episode-edit-button:hover,
+.episode-delete-button:hover {
+    background: #f7f7f7;
+
+    border-color: #bbb;
+}
+
+.episode-delete-button {
+    font-family: inherit;
+}
+
+
+/* ========================================
+   회차가 없을 때
+======================================== */
+
+.episode-empty {
+    padding: 55px 20px;
+
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+
+    background: #fff;
+
+    color: #999;
+
+    font-size: 14px;
+
+    text-align: center;
+}
+
+
+/* ========================================
+   불러오는 중 / 오류
+======================================== */
+
+.episode-loading,
+.episode-error {
+    padding: 55px 20px;
+
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+
+    background: #fff;
+
+    color: #999;
+
+    font-size: 14px;
+
+    text-align: center;
+}
+
+.episode-error {
+    color: #d33;
+}
+
+
+/* ========================================
+   모바일
+======================================== */
+
+@media (max-width: 600px) {
+
+    .episode-page {
+        padding: 45px 15px 70px;
+    }
+
+    .episode-box h1 {
+        font-size: 26px;
+
+        margin-bottom: 25px;
+    }
+
+    .episode-top {
+        align-items: flex-end;
+    }
+
+    .episode-new-button {
+        height: 38px;
+
+        padding: 0 13px;
+
+        font-size: 12px;
+    }
+
+    .episode-card {
+        align-items: flex-start;
+
+        padding: 17px;
+
+        gap: 12px;
+    }
+
+    .episode-actions {
+        flex-direction: column;
+    }
+
+}/* ========================================
+   회차 읽기 페이지
+======================================== */
+
+.episode-read-page {
+    min-height: calc(100vh - 72px);
+
+    padding: 70px 20px 120px;
+
+    background: #fafafa;
+}
+
+
+.episode-read-box {
+    width: 100%;
+    max-width: 800px;
+
+    margin: 0 auto;
+}
+
+
+/* ========================================
+   작품 제목
+======================================== */
+
+.episode-read-novel-title {
+    display: inline-block;
+
+    margin-bottom: 35px;
+
+    color: #888;
+
+    font-size: 14px;
+
+    text-decoration: none;
+}
+
+.episode-read-novel-title:hover {
+    color: #222;
+}
+
+
+/* ========================================
+   회차 헤더
+======================================== */
+
+.episode-read-header {
+    padding-bottom: 30px;
+
+    border-bottom: 1px solid #ddd;
+}
+
+
+.episode-read-number {
+    display: block;
+
+    margin-bottom: 10px;
+
+    color: #999;
+
+    font-size: 13px;
+}
+
+
+.episode-read-header h1 {
+    margin: 0 0 12px;
+
+    color: #171717;
+
+    font-size: 30px;
+    font-weight: 600;
+
+    line-height: 1.4;
+}
+
+
+.episode-read-date {
+    margin: 0;
+
+    color: #aaa;
+
+    font-size: 12px;
+}
+
+
+/* ========================================
+   본문
+======================================== */
+
+.episode-read-content {
+    padding: 55px 10px 70px;
+
+    color: #333;
+
+    font-size: 20px;
+
+    line-height: 2.3;
+
+    letter-spacing: 0.1px;
+
+    word-break: break-word;
+}
+
+
+.episode-read-content br {
+    display: block;
+
+    content: "";
+
+    margin-bottom: 9px;
+}
+
+
+/* ========================================
+   이전 / 목록 / 다음
+======================================== */
+
+.episode-navigation {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 10px;
+
+    padding-top: 30px;
+
+    border-top: 1px solid #ddd;
+}
+
+
+.episode-nav-button {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    min-width: 110px;
+
+    height: 45px;
+
+    padding: 0 18px;
+
+    box-sizing: border-box;
+
+    border: 1px solid #e5e5e5;
+
+    border-radius: 6px;
+
+    background: #fff;
+
+    color: #555;
+
+    font-size: 13px;
+
+    text-decoration: none;
+
+    transition: 0.2s;
+}
+
+
+.episode-nav-button:hover {
+    background: #f5f5f5;
+
+    border-color: #bbb;
+
+    color: #222;
+}
+
+
+/* 회차 목록 버튼 */
+
+.episode-list-button {
+    background: #171717;
+
+    border-color: #171717;
+
+    color: #fff;
+}
+
+
+.episode-list-button:hover {
+    background: #333;
+
+    border-color: #333;
+
+    color: #fff;
+}
+
+
+/* 이전/다음 회차가 없을 때 */
+
+.episode-nav-disabled {
+    color: #bbb;
+
+    background: #f8f8f8;
+
+    cursor: default;
+
+    pointer-events: none;
+}
+
+
+/* 오류 */
+
+.episode-read-error {
+    padding: 60px 20px;
+
+    border: 1px solid #e5e5e5;
+
+    border-radius: 8px;
+
+    background: #fff;
+
+    color: #d33;
+
+    font-size: 14px;
+
+    text-align: center;
+}
+
+
+/* ========================================
+   모바일
+======================================== */
+
+@media (max-width: 600px) {
+
+    .episode-read-page {
+        padding: 45px 18px 80px;
+    }
+
+
+    .episode-read-header h1 {
+        font-size: 25px;
+    }
+
+
+    .episode-read-content {
+        padding: 40px 3px 55px;
+
+        font-size: 18px;
+
+        line-height: 2.2;
+    }
+
+
+    .episode-navigation {
+        gap: 6px;
+    }
+
+
+    .episode-nav-button {
+        min-width: 0;
+
+        flex: 1;
+
+        padding: 0 8px;
+
+        font-size: 12px;
+    }
+
+}/* ========================================
+   회차 수정 - 작품 정보
+======================================== */
+
+#novel-info {
+    margin-bottom: 30px;
+}
+
+.episode-novel-info {
+    display: flex;
+    align-items: center;
+
+    gap: 15px;
+
+    padding: 17px 20px;
+
+    border: 1px solid #e5e5e5;
+    border-radius: 7px;
+
+    background: #fff;
+}
+
+.episode-novel-info span {
+    color: #999;
+
+    font-size: 13px;
+}
+
+.episode-novel-info strong {
+    color: #222;
+
+    font-size: 15px;
+    font-weight: 600;
+}/* ========================================
+   작품 상세 - 회차 목록
+======================================== */
+
+.novel-episodes-section {
+    margin-top: 55px;
+}
+
+
+/* 회차 목록 제목 */
+
+.novel-episodes-header {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 15px;
+}
+
+
+.novel-episodes-header h2 {
+    margin: 0;
+
+    font-size: 20px;
+    font-weight: 600;
+}
+
+
+.novel-episodes-header span {
+    color: #999;
+
+    font-size: 13px;
+}
+
+
+/* ========================================
+   회차 하나
+======================================== */
+
+.novel-episode-item {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 20px;
+
+    min-height: 68px;
+
+    padding: 0 22px;
+
+    margin-bottom: 8px;
+
+    box-sizing: border-box;
+
+    border: 1px solid #e5e5e5;
+
+    border-radius: 7px;
+
+    background: #fff;
+
+    color: #171717;
+
+    text-decoration: none;
+
+    transition: 0.2s;
+}
+
+
+.novel-episode-item:hover {
+    border-color: #aaa;
+
+    transform: translateY(-1px);
+
+    background: #fff;
+}
+
+
+/* ========================================
+   회차 왼쪽
+======================================== */
+
+.novel-episode-left {
+    display: flex;
+
+    align-items: center;
+
+    gap: 18px;
+
+    min-width: 0;
+}
+
+
+.novel-episode-number {
+    flex-shrink: 0;
+
+    width: 42px;
+
+    color: #999;
+
+    font-size: 13px;
+}
+
+
+.novel-episode-left strong {
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+    font-size: 15px;
+
+    font-weight: 500;
+}
+
+
+/* 날짜 */
+
+.novel-episode-date {
+    flex-shrink: 0;
+
+    color: #aaa;
+
+    font-size: 12px;
+}
+
+
+/* ========================================
+   회차 없음 / 로딩 / 오류
+======================================== */
+
+.novel-episodes-empty,
+.novel-episodes-loading,
+.novel-episodes-error {
+    padding: 50px 20px;
+
+    border: 1px solid #e5e5e5;
+
+    border-radius: 7px;
+
+    background: #fff;
+
+    color: #999;
+
+    font-size: 14px;
+
+    text-align: center;
+}
+
+
+.novel-episodes-error {
+    color: #d33;
+}
+
+
+/* 작품 오류 */
+
+.novel-detail-error {
+    padding: 60px 20px;
+
+    border: 1px solid #e5e5e5;
+
+    border-radius: 8px;
+
+    background: #fff;
+
+    color: #d33;
+
+    text-align: center;
+}
+
+
+/* ========================================
+   모바일
+======================================== */
+
+@media (max-width: 600px) {
+
+    .novel-episodes-section {
+        margin-top: 40px;
+    }
+
+
+    .novel-episode-item {
+        min-height: 62px;
+
+        padding: 0 15px;
+
+        gap: 10px;
+    }
+
+
+    .novel-episode-left {
+        gap: 10px;
+    }
+
+
+    .novel-episode-number {
+        width: 35px;
+
+        font-size: 12px;
+    }
+
+
+    .novel-episode-left strong {
+        font-size: 14px;
+    }
+
+
+    .novel-episode-date {
+        font-size: 11px;
+    }
+
+}/* ========================================
+   작품 표지
+======================================== */
+
+.cover-help {
+    margin: 8px 0 12px;
+
+    color: #999;
+
+    font-size: 12px;
+}
+
+
+#cover {
+    width: 100%;
+
+    padding: 14px;
+
+    box-sizing: border-box;
+
+    border: 1px solid #ddd;
+
+    border-radius: 7px;
+
+    background: #fff;
+
+    font-family: inherit;
+
+    font-size: 14px;
+
+    cursor: pointer;
+}
+
+
+.cover-preview {
+    width: 180px;
+
+    height: 250px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    overflow: hidden;
+
+    margin-top: 15px;
+
+    border: 1px solid #e5e5e5;
+
+    border-radius: 7px;
+
+    background: #f8f8f8;
+
+    color: #aaa;
+
+    font-size: 12px;
+
+    line-height: 1.6;
+
+    text-align: center;
+}
+
+
+.cover-preview img {
+    display: block;
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: cover;
+}/* ========================================
+   작품 상세 페이지
+======================================== */
+
+.novel-detail-main {
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 35px;
+}
+
+
+/* ========================================
+   작품 표지
+======================================== */
+
+.novel-detail-cover {
+    width: 190px;
+    height: 270px;
+
+    flex-shrink: 0;
+
+    overflow: hidden;
+
+    border-radius: 7px;
+
+    background: #f3f3f3;
+}
+
+
+.novel-detail-cover img {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+}
+
+
+/* 표지가 없을 때 */
+
+.novel-detail-no-cover {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid #e5e5e5;
+
+    background: #f8f8f8;
+}
+
+
+.novel-detail-no-cover span {
+    color: #bbb;
+
+    font-size: 12px;
+
+    letter-spacing: 3px;
+}
+
+
+/* ========================================
+   작품 정보
+======================================== */
+
+.novel-detail-info {
+    flex: 1;
+
+    min-width: 0;
+}
+
+
+.novel-detail-header {
+    padding-bottom: 30px;
+
+    border-bottom: 1px solid #ddd;
+}
+
+
+.novel-detail-info
+.novel-detail-header {
+    padding-top: 15px;
+}
+
+
+.novel-detail-genre {
+    color: #888;
+
+    font-size: 13px;
+}
+
+
+.novel-detail-header h1 {
+    margin: 12px 0 18px;
+
+    color: #171717;
+
+    font-size: 32px;
+
+    font-weight: 600;
+
+    line-height: 1.4;
+}
+
+
+.novel-detail-meta {
+    display: flex;
+
+    gap: 20px;
+
+    color: #aaa;
+
+    font-size: 12px;
+}
+
+
+.novel-detail-meta strong {
+    margin-left: 5px;
+
+    color: #555;
+
+    font-weight: 500;
+}
+
+
+/* ========================================
+   작품 소개
+======================================== */
+
+.novel-detail-description {
+    margin-top: 40px;
+
+    padding: 28px 30px;
+
+    border: 1px solid #e5e5e5;
+
+    border-radius: 8px;
+
+    background: #fff;
+}
+
+
+.novel-detail-description h2 {
+    margin: 0 0 15px;
+
+    font-size: 16px;
+
+    font-weight: 600;
+}
+
+
+.novel-detail-description p {
+    margin: 0;
+
+    color: #666;
+
+    font-size: 14px;
+
+    line-height: 1.9;
+}
+
+
+/* ========================================
+   회차 목록
+======================================== */
+
+.novel-episodes-section {
+    margin-top: 55px;
+}
+
+
+.novel-episodes-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 15px;
+}
+
+
+.novel-episodes-header h2 {
+    margin: 0;
+
+    font-size: 20px;
+
+    font-weight: 600;
+}
+
+
+.novel-episodes-header span {
+    color: #999;
+
+    font-size: 13px;
+}
+
+
+/* ========================================
+   첫 화부터 읽기
+======================================== */
+
+.novel-first-episode {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 100%;
+
+    height: 48px;
+
+    margin-bottom: 12px;
+
+    box-sizing: border-box;
+
+    border-radius: 6px;
+
+    background: #171717;
+
+    color: #fff;
+
+    font-size: 13px;
+
+    text-decoration: none;
+
+    transition: 0.2s;
+}
+
+
+.novel-first-episode:hover {
+    background: #333;
+}
+
+
+/* ========================================
+   회차 하나
+======================================== */
+
+.novel-episode-item {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 20px;
+
+    min-height: 68px;
+
+    margin-bottom: 8px;
+
+    padding: 0 22px;
+
+    box-sizing: border-box;
+
+    border: 1px solid #e5e5e5;
+
+    border-radius: 7px;
+
+    background: #fff;
+
+    color: #171717;
+
+    text-decoration: none;
+
+    transition: 0.2s;
+}
+
+
+.novel-episode-item:hover {
+    border-color: #aaa;
+
+    transform: translateY(-1px);
+}
+
+
+.novel-episode-left {
+    display: flex;
+
+    align-items: center;
+
+    gap: 18px;
+
+    min-width: 0;
+}
+
+
+.novel-episode-number {
+    flex-shrink: 0;
+
+    width: 42px;
+
+    color: #999;
+
+    font-size: 13px;
+}
+
+
+.novel-episode-left strong {
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+    font-size: 15px;
+
+    font-weight: 500;
+}
+
+
+.novel-episode-date {
+    flex-shrink: 0;
+
+    color: #aaa;
+
+    font-size: 12px;
+}
+
+
+/* ========================================
+   로딩 / 오류 / 빈 목록
+======================================== */
+
+.novel-detail-loading,
+.novel-detail-error,
+.novel-episodes-loading,
+.novel-episodes-empty,
+.novel-episodes-error {
+    padding: 55px 20px;
+
+    border: 1px solid #e5e5e5;
+
+    border-radius: 8px;
+
+    background: #fff;
+
+    color: #999;
+
+    font-size: 14px;
+
+    text-align: center;
+}
+
+
+.novel-detail-error,
+.novel-episodes-error {
+    color: #d33;
+}
+
+
+/* ========================================
+   모바일
+======================================== */
+
+@media (max-width: 600px) {
+
+    .novel-detail-main {
+        gap: 18px;
+    }
+
+
+    .novel-detail-cover {
+        width: 120px;
+
+        height: 170px;
+    }
+
+
+    .novel-detail-info
+    .novel-detail-header {
+        padding-top: 3px;
+
+        padding-bottom: 20px;
+    }
+
+
+    .novel-detail-header h1 {
+        margin: 8px 0 12px;
+
+        font-size: 21px;
+    }
+
+
+    .novel-detail-meta {
+        flex-direction: column;
+
+        gap: 5px;
+    }
+
+
+    .novel-detail-description {
+        margin-top: 30px;
+
+        padding: 22px;
+    }
+
+
+    .novel-episodes-section {
+        margin-top: 40px;
+    }
+
+
+    .novel-episode-item {
+        min-height: 62px;
+
+        padding: 0 15px;
+
+        gap: 10px;
+    }
+
+
+    .novel-episode-left {
+        gap: 10px;
+    }
+
+
+    .novel-episode-number {
+        width: 35px;
+
+        font-size: 12px;
+    }
+
+
+    .novel-episode-left strong {
+        font-size: 14px;
+    }
+
+
+    .novel-episode-date {
+        display: none;
+    }
+
+}/* ========================================
+   작품 수정 - 표지
+======================================== */
+
+.edit-current-cover {
+    width: 190px;
+    height: 270px;
+
+    margin-top: 10px;
+
+    overflow: hidden;
+
+    border: 1px solid #e5e5e5;
+
+    border-radius: 7px;
+
+    background: #f8f8f8;
+}
+
+
+.edit-current-cover img {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+}
+
+
+.edit-no-cover {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    height: 100%;
+
+    color: #bbb;
+
+    font-size: 12px;
+
+    letter-spacing: 3px;
+}
+
+
+/* 파일 선택 버튼 */
+
+.cover-select-button {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 150px;
+    height: 44px;
+
+    margin-top: 15px;
+
+    border: 1px solid #ddd;
+
+    border-radius: 6px;
+
+    background: #fff;
+
+    color: #555;
+
+    font-size: 13px;
+
+    cursor: pointer;
+
+    box-sizing: border-box;
+}
+
+
+.cover-select-button:hover {
+    background: #f7f7f7;
+}
+
+
+/* 실제 파일 input 숨기기 */
+
+#cover {
+    display: none;
+}
+
+
+/* 설명 */
+
+.cover-help {
+    margin: 10px 0 0;
+
+    color: #aaa;
+
+    font-size: 12px;
+}
+
+
+/* 새 표지 미리보기 */
+
+.cover-preview {
+    margin-top: 25px;
+}
+
+
+.cover-preview-title {
+    margin-bottom: 10px;
+
+    color: #777;
+
+    font-size: 13px;
+}
+
+
+.cover-preview img {
+    display: block;
+
+    width: 190px;
+    height: 270px;
+
+    object-fit: cover;
+
+    border-radius: 7px;
+}
+
+
+/* 모바일 */
+
+@media (max-width: 600px) {
+
+    .edit-current-cover,
+    .cover-preview img {
+        width: 150px;
+        height: 215px;
+    }
+
+}/* ========================================
+   소설 목록
+======================================== */
+
+.novels-page {
+    min-height: calc(100vh - 72px);
+    padding: 80px 20px;
+}
+
+.novels-container {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.novels-header {
+    margin-bottom: 40px;
+}
+
+.novels-small {
+    margin: 0 0 8px;
+    font-size: 12px;
+    color: #999;
+    letter-spacing: 3px;
+}
+
+.novels-header h1 {
+    margin: 0;
+    font-size: 34px;
+    font-weight: 600;
+}
+
+
+/* ========================================
+   소설 카드 목록
+======================================== */
+
+.novel-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+}
+
+
+/* ========================================
+   소설 카드
+======================================== */
+
+.novel-card {
+    display: flex;
+    min-height: 220px;
+
+    text-decoration: none;
+    color: inherit;
+
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+
+    background: #fff;
+
+    overflow: hidden;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.novel-card:hover {
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.06);
+}
+
+
+/* ========================================
+   표지
+======================================== */
+
+.novel-card-cover {
+    width: 150px;
+    min-width: 150px;
+    height: 220px;
+
+    background: #f5f5f5;
+}
+
+.novel-card-cover-image {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+}
+
+.novel-card-no-cover {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #f5f5f5;
+
+    color: #aaa;
+
+    font-size: 13px;
+    letter-spacing: 2px;
+}
+
+
+/* ========================================
+   작품 정보
+======================================== */
+
+.novel-card-info {
+    flex: 1;
+
+    min-width: 0;
+
+    padding: 24px;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.novel-card-genre {
+    font-size: 12px;
+    color: #888;
+
+    margin-bottom: 10px;
+}
+
+.novel-card-info h2 {
+    margin: 0 0 12px;
+
+    font-size: 21px;
+    font-weight: 600;
+
+    color: #171717;
+
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.novel-card-description {
+    margin: 0;
+
+    color: #777;
+
+    font-size: 14px;
+    line-height: 1.7;
+
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+
+    overflow: hidden;
+}
+
+
+/* ========================================
+   작가 / 날짜
+======================================== */
+
+.novel-card-meta {
+    margin-top: auto;
+    padding-top: 18px;
+
+    display: flex;
+    justify-content: space-between;
+
+    font-size: 12px;
+    color: #999;
+}
+
+
+/* ========================================
+   로딩 / 오류 / 없음
+======================================== */
+
+.novels-loading,
+.novels-error,
+.novels-empty {
+    padding: 80px 20px;
+
+    text-align: center;
+
+    color: #999;
+
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+}
+
+.novels-error {
+    color: #d33;
+}
+
+
+/* ========================================
+   모바일
+======================================== */
+
+@media (max-width: 700px) {
+
+    .novels-page {
+        padding: 50px 16px;
+    }
+
+    .novel-list {
+        grid-template-columns: 1fr;
+    }
+
+    .novel-card {
+        min-height: 180px;
+    }
+
+    .novel-card-cover {
+        width: 120px;
+        min-width: 120px;
+        height: 180px;
+    }
+
+    .novel-card-info {
+        padding: 18px;
+    }
+
+    .novel-card-info h2 {
+        font-size: 18px;
+    }
+
+}/* ========================================
+   검색 페이지
+======================================== */
+
+.search-page {
+    min-height: calc(100vh - 72px);
+    padding: 80px 20px;
+}
+
+.search-box {
+    width: 100%;
+    max-width: 850px;
+    margin: 0 auto;
+}
+
+.search-small {
+    margin-bottom: 10px;
+    color: #999;
+    font-size: 12px;
+    letter-spacing: 2px;
+}
+
+.search-box h1 {
+    margin-bottom: 30px;
+    font-size: 34px;
+}
+
+.search-input-wrap {
+    display: flex;
+    gap: 10px;
+}
+
+.search-input-wrap input {
+    flex: 1;
+    height: 52px;
+    padding: 0 16px;
+
+    border: 1px solid #ddd;
+    border-radius: 6px;
+
+    background: #fff;
+    color: #222;
+
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+}
+
+.search-input-wrap input:focus {
+    border-color: #999;
+}
+
+.search-input-wrap button {
+    width: 90px;
+    height: 52px;
+
+    border: none;
+    border-radius: 6px;
+
+    background: #171717;
+    color: #fff;
+
+    cursor: pointer;
+}
+
+.search-count {
+    margin: 25px 0 15px;
+
+    color: #999;
+    font-size: 13px;
+}
+
+#search-results {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.search-novel-card {
+    display: flex;
+    min-height: 170px;
+
+    overflow: hidden;
+
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+
+    background: #fff;
+
+    transition: 0.2s;
+}
+
+.search-novel-card:hover {
+    border-color: #aaa;
+    transform: translateY(-2px);
+}
+
+.search-novel-cover {
+    width: 120px;
+    min-width: 120px;
+    height: 170px;
+
+    background: #f5f5f5;
+}
+
+.search-novel-cover img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+}
+
+.search-no-cover {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #aaa;
+    font-size: 12px;
+    letter-spacing: 2px;
+}
+
+.search-novel-info {
+    flex: 1;
+    min-width: 0;
+    padding: 22px;
+}
+
+.search-novel-genre {
+    color: #888;
+    font-size: 12px;
+}
+
+.search-novel-info h2 {
+    margin: 8px 0 10px;
+
+    color: #171717;
+    font-size: 20px;
+}
+
+.search-novel-info p {
+    margin: 0;
+
+    color: #777;
+    font-size: 13px;
+    line-height: 1.7;
+
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+
+    overflow: hidden;
+}
+
+.search-novel-meta {
+    display: flex;
+    justify-content: space-between;
+
+    margin-top: 18px;
+
+    color: #aaa;
+    font-size: 12px;
+}
+
+.search-loading,
+.search-error,
+.search-empty {
+    padding: 50px 20px;
+
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+
+    text-align: center;
+
+    color: #999;
+}
+
+.search-error {
+    color: #d33;
+}/* ========================================
+   관리자 페이지
+======================================== */
+
+.admin-page {
+    width: 100%;
+    padding: 70px 20px 100px;
+    background: #fafafa;
+    min-height: calc(100vh - 70px);
+}
+
+.admin-box {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+
+/* 페이지 제목 */
+
+.admin-header {
+    margin-bottom: 45px;
+}
+
+.admin-small {
+    margin-bottom: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #888;
+}
+
+.admin-header h1 {
+    margin: 0;
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1.3;
+    color: #111;
+}
+
+.admin-description {
+    margin-top: 12px;
+    font-size: 15px;
+    line-height: 1.6;
+    color: #777;
+}
+
+
+/* 관리자 섹션 */
+
+.admin-section {
+    padding: 35px;
+    background: #ffffff;
+    border: 1px solid #e8e8e8;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+}
+
+.admin-section-header {
+    padding-bottom: 25px;
+    margin-bottom: 25px;
+    border-bottom: 1px solid #eeeeee;
+}
+
+.admin-section-small {
+    margin-bottom: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.8px;
+    color: #999;
+}
+
+.admin-section-header h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: #171717;
+}
+
+.admin-section-description {
+    margin-top: 8px;
+    font-size: 14px;
+    color: #777;
+    line-height: 1.5;
+}
+
+
+/* 신청 목록 */
+
+.application-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+
+/* 신청자 카드 */
+
+.application-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 25px;
+
+    padding: 20px;
+
+    background: #fafafa;
+    border: 1px solid #eeeeee;
+    border-radius: 12px;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.application-item:hover {
+    background: #ffffff;
+    border-color: #dddddd;
+}
+
+
+/* 회원 정보 */
+
+.application-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex: 1;
+    gap: 30px;
+}
+
+.application-user {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+}
+
+.application-avatar {
+    width: 44px;
+    height: 44px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #eeeeee;
+    color: #555;
+
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.application-user-text {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+
+    min-width: 0;
+}
+
+.application-user-text strong {
+    font-size: 16px;
+    font-weight: 700;
+    color: #222;
+}
+
+.application-user-text span {
+    max-width: 350px;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    font-size: 13px;
+    color: #888;
+}
+
+
+/* 신청 날짜 */
+
+.application-date {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    flex-shrink: 0;
+
+    font-size: 11px;
+    color: #999;
+}
+
+.application-date strong {
+    font-size: 13px;
+    font-weight: 500;
+    color: #666;
+}
+
+
+/* 버튼 영역 */
+
+.application-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+
+/* 공통 버튼 */
+
+.application-actions button {
+    min-width: 72px;
+    height: 40px;
+
+    padding: 0 16px;
+
+    border-radius: 8px;
+
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.15s ease;
+}
+
+.application-actions button:hover {
+    transform: translateY(-1px);
+}
+
+.application-actions button:active {
+    transform: translateY(0);
+}
+
+
+/* 승인 */
+
+.approve-button {
+    border: 1px solid #222;
+    background: #222;
+    color: #ffffff;
+}
+
+.approve-button:hover {
+    background: #000;
+    border-color: #000;
+}
+
+
+/* 거절 */
+
+.reject-button {
+    border: 1px solid #dddddd;
+    background: #ffffff;
+    color: #555;
+}
+
+.reject-button:hover {
+    background: #f5f5f5;
+    border-color: #cccccc;
+}
+
+
+/* 로딩 */
+
+.application-loading {
+    padding: 45px 20px;
+
+    text-align: center;
+
+    font-size: 14px;
+    color: #888;
+}
+
+
+/* 신청자가 없는 경우 */
+
+.application-empty {
+    padding: 55px 20px;
+
+    text-align: center;
+
+    border: 1px dashed #dddddd;
+    border-radius: 12px;
+
+    background: #fafafa;
+}
+
+.application-empty-icon {
+    width: 44px;
+    height: 44px;
+
+    margin: 0 auto 15px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #eeeeee;
+    color: #555;
+
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.application-empty strong {
+    display: block;
+
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+}
+
+.application-empty p {
+    margin-top: 7px;
+
+    font-size: 13px;
+    color: #999;
+}
+
+
+/* 오류 */
+
+.application-error {
+    padding: 30px;
+
+    text-align: center;
+
+    border: 1px solid #eeeeee;
+    border-radius: 12px;
+
+    background: #fafafa;
+}
+
+.application-error strong {
+    display: block;
+
+    font-size: 15px;
+    color: #444;
+}
+
+.application-error p {
+    margin-top: 7px;
+
+    font-size: 13px;
+    color: #999;
+}
+
+
+/* ========================================
+   관리자 페이지 모바일
+======================================== */
+
+@media (max-width: 700px) {
+
+    .admin-page {
+        padding: 45px 15px 70px;
+    }
+
+    .admin-header {
+        margin-bottom: 30px;
+    }
+
+    .admin-header h1 {
+        font-size: 29px;
+    }
+
+    .admin-description {
+        font-size: 14px;
+    }
+
+    .admin-section {
+        padding: 22px 18px;
+        border-radius: 12px;
+    }
+
+    .admin-section-header h2 {
+        font-size: 21px;
+    }
+
+    .admin-section-description {
+        font-size: 13px;
+    }
+
+    .application-item {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 18px;
+        padding: 17px;
+    }
+
+    .application-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 14px;
+    }
+
+    .application-date {
+        padding-left: 58px;
+    }
+
+    .application-actions {
+        width: 100%;
+    }
+
+    .application-actions button {
+        flex: 1;
+    }
+
+}

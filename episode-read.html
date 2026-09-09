@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>회차 읽기 - NOVEL</title>
+
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+    ></script>
+
+    <script src="js/supabase.js"></script>
+
+</head>
+
+
+<body>
+
+
+<!-- ========================================
+     헤더
+======================================== -->
+
+<header>
+
+    <div class="header-inner">
+
+        <a
+            href="index.html"
+            class="logo"
+        >
+            NOVEL
+        </a>
+
+
+        <nav>
+
+            <a href="novels.html">
+                소설
+            </a>
+
+            <a href="#">
+                검색
+            </a>
+        
+            </a>
+
+        </nav>
+
+
+        <div class="header-right">
+
+            <a href="index.html">
+                홈
+            </a>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+
+<!-- ========================================
+     회차 본문
+======================================== -->
+
+<main class="episode-read-page">
+
+    <div class="episode-read-box">
+
+
+        <!-- 작품 제목 -->
+
+        <a
+            id="novel-title"
+            href="#"
+            class="episode-read-novel-title"
+        >
+            작품을 불러오는 중...
+        </a>
+
+
+        <!-- 회차 제목 -->
+
+        <div class="episode-read-header">
+
+            <span
+                id="episode-number"
+                class="episode-read-number"
+            >
+                -
+            </span>
+
+
+            <h1 id="episode-title">
+                회차를 불러오는 중...
+            </h1>
+
+
+            <p
+                id="episode-date"
+                class="episode-read-date"
+            >
+            </p>
+
+        </div>
+
+
+        <!-- 본문 -->
+
+        <article
+            id="episode-content"
+            class="episode-read-content"
+        >
+            본문을 불러오는 중...
+        </article>
+
+
+        <!-- 이전 / 목록 / 다음 -->
+
+        <div class="episode-navigation">
+
+            <a
+                id="previous-episode"
+                href="#"
+                class="episode-nav-button"
+            >
+                ← 이전 화
+            </a>
+
+
+            <a
+                id="episode-list"
+                href="#"
+                class="episode-nav-button episode-list-button"
+            >
+                회차 목록
+            </a>
+
+
+            <a
+                id="next-episode"
+                href="#"
+                class="episode-nav-button"
+            >
+                다음 화 →
+            </a>
+
+        </div>
+
+
+    </div>
+
+</main>
+
+
+
+<script>
+
+
+// ========================================
+// 현재 회차 ID
+// ========================================
+
+const params =
+    new URLSearchParams(
+        window.location.search
+    );
+
+
+const episodeId =
+    params.get("id");
+
+
+// ========================================
+// 회차 불러오기
+// ========================================
+
+async function loadEpisode() {
+
+    const contentElement =
+        document.getElementById(
+            "episode-content"
+        );
+
+
+    // ID가 없는 경우
+
+    if (!episodeId) {
+
+        contentElement.textContent =
+            "회차 정보를 찾을 수 없습니다.";
+
+        return;
+
+    }
+
+
+    // ========================================
+    // 현재 회차 가져오기
+    // ========================================
+
+    const episodeResult =
+        await supabaseClient
+            .from("novel_episodes")
+            .select(`
+                id,
+                novel_id,
+                episode_number,
+                title,
+                content,
+                created_at,
+                novels (
+                    title,
+                    status
+                )
+            `)
+            .eq("id", episodeId)
+            .single();
+
+
+    if (episodeResult.error) {
+
+        console.error(
+            "회차 불러오기 오류:",
+            episodeResult.error
+        );
+
+
+        contentElement.innerHTML = `
+            <div class="episode-read-error">
+                회차를 불러오지 못했습니다.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    const episode =
+        episodeResult.data;
+
+
+    // ========================================
+    // 작품 공개 여부 확인
+    // ========================================
+
+    if (
+        !episode.novels ||
+        episode.novels.status !== "published"
+    ) {
+
+        contentElement.innerHTML = `
+            <div class="episode-read-error">
+                공개되지 않은 작품입니다.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    const novelTitle =
+        episode.novels.title;
+
+
+    // ========================================
+    // 화면에 정보 표시
+    // ========================================
+
+    document.title =
+        episode.title +
+        " - " +
+        novelTitle +
+        " - NOVEL";
+
+
+    document.getElementById(
+        "novel-title"
+    ).textContent =
+        novelTitle;
+
+
+    document.getElementById(
+        "episode-number"
+    ).textContent =
+        episode.episode_number +
+        "화";
+
+
+    document.getElementById(
+        "episode-title"
+    ).textContent =
+        episode.title;
+
+
+    document.getElementById(
+        "episode-date"
+    ).textContent =
+        new Date(
+            episode.created_at
+        ).toLocaleDateString(
+            "ko-KR"
+        );
+
+
+    // ========================================
+    // 작품 페이지 연결
+    // ========================================
+
+    document.getElementById(
+        "novel-title"
+    ).href =
+        "novel.html?id=" +
+        episode.novel_id;
+
+
+    // ========================================
+    // 본문 표시
+    // ========================================
+
+    document.getElementById(
+        "episode-content"
+    ).innerHTML =
+        escapeHTML(
+            episode.content
+        ).replace(
+            /\n/g,
+            "<br>"
+        );
+
+
+    // ========================================
+    // 회차 목록 연결
+    // ========================================
+
+    document.getElementById(
+        "episode-list"
+    ).href =
+        "episode.html?novel_id=" +
+        episode.novel_id;
+
+
+    // ========================================
+    // 이전 회차 찾기
+    // ========================================
+
+    const previousResult =
+        await supabaseClient
+            .from("novel_episodes")
+            .select(
+                "id, episode_number"
+            )
+            .eq(
+                "novel_id",
+                episode.novel_id
+            )
+            .lt(
+                "episode_number",
+                episode.episode_number
+            )
+            .order(
+                "episode_number",
+                {
+                    ascending: false
+                }
+            )
+            .limit(1);
+
+
+    if (
+        !previousResult.error &&
+        previousResult.data.length > 0
+    ) {
+
+        const previousEpisode =
+            previousResult.data[0];
+
+
+        const previousButton =
+            document.getElementById(
+                "previous-episode"
+            );
+
+
+        previousButton.href =
+            "episode-read.html?id=" +
+            previousEpisode.id;
+
+
+    } else {
+
+        const previousButton =
+            document.getElementById(
+                "previous-episode"
+            );
+
+
+        previousButton.classList.add(
+            "episode-nav-disabled"
+        );
+
+
+        previousButton.removeAttribute(
+            "href"
+        );
+
+
+        previousButton.textContent =
+            "첫 화입니다";
+
+    }
+
+
+    // ========================================
+    // 다음 회차 찾기
+    // ========================================
+
+    const nextResult =
+        await supabaseClient
+            .from("novel_episodes")
+            .select(
+                "id, episode_number"
+            )
+            .eq(
+                "novel_id",
+                episode.novel_id
+            )
+            .gt(
+                "episode_number",
+                episode.episode_number
+            )
+            .order(
+                "episode_number",
+                {
+                    ascending: true
+                }
+            )
+            .limit(1);
+
+
+    if (
+        !nextResult.error &&
+        nextResult.data.length > 0
+    ) {
+
+        const nextEpisode =
+            nextResult.data[0];
+
+
+        const nextButton =
+            document.getElementById(
+                "next-episode"
+            );
+
+
+        nextButton.href =
+            "episode-read.html?id=" +
+            nextEpisode.id;
+
+
+    } else {
+
+        const nextButton =
+            document.getElementById(
+                "next-episode"
+            );
+
+
+        nextButton.classList.add(
+            "episode-nav-disabled"
+        );
+
+
+        nextButton.removeAttribute(
+            "href"
+        );
+
+
+        nextButton.textContent =
+            "마지막 화입니다";
+
+    }
+
+}
+
+
+
+// ========================================
+// HTML 특수문자 처리
+// ========================================
+
+function escapeHTML(text) {
+
+    return text
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+
+// ========================================
+// 시작
+// ========================================
+
+loadEpisode();
+
+
+</script>
+
+
+</body>
+
+</html>

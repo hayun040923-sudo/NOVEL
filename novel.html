@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>소설 - NOVEL</title>
+
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+    ></script>
+
+    <script src="js/supabase.js"></script>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <div class="header-inner">
+
+        <a
+            href="index.html"
+            class="logo"
+        >
+            NOVEL
+        </a>
+
+
+        <nav>
+
+            <a href="novels.html">
+                소설
+            </a>
+
+            <a href="#">
+                검색
+            </a>
+
+            </a>
+
+        </nav>
+
+
+        <div class="header-right">
+
+            <a href="index.html">
+                홈으로
+            </a>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+
+<main class="novel-detail-page">
+
+    <div class="novel-detail-box">
+
+        <div id="novel-detail">
+
+            <p class="novel-detail-loading">
+                작품을 불러오는 중...
+            </p>
+
+        </div>
+
+
+        <section class="novel-episodes-section">
+
+            <div class="novel-episodes-header">
+
+                <h2>
+                    회차 목록
+                </h2>
+
+                <span id="episode-count">
+                    -
+                </span>
+
+            </div>
+
+
+            <div id="novel-episodes">
+
+                <p class="novel-episodes-loading">
+                    회차를 불러오는 중...
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <div class="novel-detail-bottom">
+
+            <a href="novels.html">
+                ← 소설 목록으로
+            </a>
+
+        </div>
+
+    </div>
+
+</main>
+
+
+
+<script>
+
+
+// ========================================
+// URL에서 작품 ID 가져오기
+// ========================================
+
+const params =
+    new URLSearchParams(
+        window.location.search
+    );
+
+
+const novelId =
+    params.get("id");
+
+
+
+// ========================================
+// HTML 보안 처리
+// ========================================
+
+function escapeHTML(text) {
+
+    if (
+        text === null ||
+        text === undefined
+    ) {
+        return "";
+    }
+
+
+    return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+
+// ========================================
+// 작품 불러오기
+// ========================================
+
+async function loadNovel() {
+
+    const detail =
+        document.getElementById(
+            "novel-detail"
+        );
+
+
+    if (!novelId) {
+
+        detail.innerHTML = `
+
+            <div class="novel-detail-error">
+
+                작품 ID가 없습니다.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+
+    // =====================================
+    // 기존 RPC 사용
+    // =====================================
+
+    const result =
+        await supabaseClient.rpc(
+            "get_published_novel",
+            {
+                target_novel_id: novelId
+            }
+        );
+
+
+
+    if (result.error) {
+
+        console.error(
+            "작품 불러오기 오류:",
+            result.error
+        );
+
+
+        detail.innerHTML = `
+
+            <div class="novel-detail-error">
+
+                작품을 불러오지 못했습니다.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+
+    // RPC는 table 형태로 반환되므로 첫 번째 데이터 사용
+
+    const novel =
+        result.data &&
+        result.data.length > 0
+            ? result.data[0]
+            : null;
+
+
+
+    if (!novel) {
+
+        detail.innerHTML = `
+
+            <div class="novel-detail-error">
+
+                존재하지 않거나
+                공개되지 않은 작품입니다.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+
+    // =====================================
+    // 페이지 제목
+    // =====================================
+
+    document.title =
+        novel.title + " - NOVEL";
+
+
+
+    // =====================================
+    // 날짜
+    // =====================================
+
+    const date =
+        new Date(
+            novel.created_at
+        ).toLocaleDateString(
+            "ko-KR"
+        );
+
+
+
+    // =====================================
+    // 표지
+    // =====================================
+
+    let coverHTML;
+
+
+    if (novel.cover_url) {
+
+        coverHTML = `
+
+            <div class="novel-detail-cover">
+
+                <img
+                    src="${escapeHTML(
+                        novel.cover_url
+                    )}"
+                    alt="${escapeHTML(
+                        novel.title
+                    )} 표지"
+                >
+
+            </div>
+
+        `;
+
+    } else {
+
+        coverHTML = `
+
+            <div
+                class="
+                    novel-detail-cover
+                    novel-detail-no-cover
+                "
+            >
+
+                <span>
+                    NOVEL
+                </span>
+
+            </div>
+
+        `;
+
+    }
+
+
+
+    // =====================================
+    // 작품 정보
+    // =====================================
+
+    detail.innerHTML = `
+
+        <div class="novel-detail-main">
+
+
+            ${coverHTML}
+
+
+            <div class="novel-detail-info">
+
+
+                <div class="novel-detail-header">
+
+
+                    <span class="novel-detail-genre">
+
+                        ${escapeHTML(
+                            novel.genre
+                        )}
+
+                    </span>
+
+
+                    <h1>
+
+                        ${escapeHTML(
+                            novel.title
+                        )}
+
+                    </h1>
+
+
+                    <div class="novel-detail-meta">
+
+                        <span>
+
+                            작가
+
+                            <strong>
+                                ${escapeHTML(
+                                    novel.author_nickname
+                                )}
+                            </strong>
+
+                        </span>
+
+
+                        <span>
+                            ${date}
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+        <div class="novel-detail-description">
+
+            <h2>
+                작품 소개
+            </h2>
+
+
+            <p>
+
+                ${
+                    novel.description
+                    ? escapeHTML(
+                        novel.description
+                    ).replace(
+                        /\n/g,
+                        "<br>"
+                    )
+                    : "작품 소개가 없습니다."
+                }
+
+            </p>
+
+        </div>
+
+    `;
+
+
+
+    // =====================================
+    // 회차 목록
+    // =====================================
+
+    await loadEpisodes();
+
+}
+
+
+
+// ========================================
+// 회차 목록
+// ========================================
+
+async function loadEpisodes() {
+
+    const episodeList =
+        document.getElementById(
+            "novel-episodes"
+        );
+
+
+    const episodeCount =
+        document.getElementById(
+            "episode-count"
+        );
+
+
+
+    const result =
+        await supabaseClient
+            .from("novel_episodes")
+            .select(`
+                id,
+                episode_number,
+                title,
+                created_at
+            `)
+            .eq(
+                "novel_id",
+                novelId
+            )
+            .order(
+                "episode_number",
+                {
+                    ascending: true
+                }
+            );
+
+
+
+    if (result.error) {
+
+        console.error(
+            "회차 불러오기 오류:",
+            result.error
+        );
+
+
+        episodeList.innerHTML = `
+
+            <div class="novel-episodes-error">
+
+                회차 목록을 불러오지 못했습니다.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+
+    const episodes =
+        result.data || [];
+
+
+
+    episodeCount.textContent =
+        episodes.length + "화";
+
+
+
+    // =====================================
+    // 회차가 없는 경우
+    // =====================================
+
+    if (episodes.length === 0) {
+
+        episodeList.innerHTML = `
+
+            <div class="novel-episodes-empty">
+
+                아직 등록된 회차가 없습니다.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+
+    // =====================================
+    // 첫 화 버튼
+    // =====================================
+
+    let html = `
+
+        <a
+            href="episode-read.html?id=${episodes[0].id}"
+            class="novel-first-episode"
+        >
+
+            첫 화부터 읽기
+
+        </a>
+
+    `;
+
+
+
+    // =====================================
+    // 회차 출력
+    // =====================================
+
+    episodes.forEach(
+        function (episode) {
+
+            const date =
+                new Date(
+                    episode.created_at
+                ).toLocaleDateString(
+                    "ko-KR"
+                );
+
+
+            html += `
+
+                <a
+                    href="episode-read.html?id=${episode.id}"
+                    class="novel-episode-item"
+                >
+
+                    <div class="novel-episode-left">
+
+                        <span
+                            class="novel-episode-number"
+                        >
+                            ${episode.episode_number}화
+                        </span>
+
+
+                        <strong>
+
+                            ${escapeHTML(
+                                episode.title
+                            )}
+
+                        </strong>
+
+                    </div>
+
+
+                    <span
+                        class="novel-episode-date"
+                    >
+
+                        ${date}
+
+                    </span>
+
+                </a>
+
+            `;
+
+        }
+    );
+
+
+
+    episodeList.innerHTML =
+        html;
+
+}
+
+
+
+// ========================================
+// 실행
+// ========================================
+
+loadNovel();
+
+</script>
+
+
+</body>
+
+</html> 

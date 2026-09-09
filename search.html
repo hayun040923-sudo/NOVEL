@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>검색 - NOVEL</title>
+
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
+
+    <script src="js/theme.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="js/supabase.js"></script>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <div class="header-inner">
+
+        <a
+            href="index.html"
+            class="logo"
+        >
+            NOVEL
+        </a>
+
+
+        <nav>
+
+            <a href="novels.html">
+                소설
+            </a>
+
+            <a href="search.html">
+                검색
+            </a>
+
+            </a>
+
+        </nav>
+
+
+        <div class="header-right">
+
+            <a href="index.html">
+                홈으로
+            </a>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+
+<main class="search-page">
+
+    <div class="search-box">
+
+        <p class="search-small">
+            NOVEL SEARCH
+        </p>
+
+
+        <h1>
+            소설 검색
+        </h1>
+
+
+        <div class="search-input-wrap">
+
+            <input
+                type="text"
+                id="search-input"
+                placeholder="소설 제목을 검색하세요"
+                autocomplete="off"
+            >
+
+            <button
+                id="search-button"
+                type="button"
+            >
+                검색
+            </button>
+
+        </div>
+
+
+        <p
+            id="search-count"
+            class="search-count"
+        >
+        </p>
+
+
+        <div id="search-results">
+
+            <div class="search-loading">
+                소설을 불러오는 중...
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+
+
+<script>
+
+let novels = [];
+
+const searchInput =
+    document.getElementById("search-input");
+
+const searchButton =
+    document.getElementById("search-button");
+
+const searchResults =
+    document.getElementById("search-results");
+
+const searchCount =
+    document.getElementById("search-count");
+
+
+// ========================================
+// HTML 특수문자 처리
+// ========================================
+
+function escapeHTML(text) {
+
+    if (
+        text === null ||
+        text === undefined
+    ) {
+        return "";
+    }
+
+    return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+// ========================================
+// 소설 불러오기
+// ========================================
+
+async function loadNovels() {
+
+    const result =
+        await supabaseClient.rpc(
+            "get_published_novels"
+        );
+
+
+    if (result.error) {
+
+        console.error(
+            "소설 검색 데이터 불러오기 실패:",
+            result.error
+        );
+
+        searchResults.innerHTML = `
+            <div class="search-error">
+                소설을 불러오지 못했습니다.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    novels = result.data || [];
+
+
+    searchCount.textContent =
+        `전체 ${novels.length}개의 소설`;
+
+
+    renderResults(novels);
+
+}
+
+
+// ========================================
+// 검색 결과 출력
+// ========================================
+
+function renderResults(results) {
+
+    if (results.length === 0) {
+
+        searchResults.innerHTML = `
+            <div class="search-empty">
+                검색 결과가 없습니다.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    let html = "";
+
+
+    results.forEach(function (novel) {
+
+        const date =
+            new Date(
+                novel.created_at
+            ).toLocaleDateString("ko-KR");
+
+
+        let coverHTML;
+
+
+        if (novel.cover_url) {
+
+            coverHTML = `
+                <img
+                    src="${escapeHTML(novel.cover_url)}"
+                    alt="${escapeHTML(novel.title)} 표지"
+                >
+            `;
+
+        } else {
+
+            coverHTML = `
+                <div class="search-no-cover">
+                    NOVEL
+                </div>
+            `;
+
+        }
+
+
+        html += `
+
+            <a
+                href="novel.html?id=${novel.id}"
+                class="search-novel-card"
+            >
+
+                <div class="search-novel-cover">
+
+                    ${coverHTML}
+
+                </div>
+
+
+                <div class="search-novel-info">
+
+                    <span class="search-novel-genre">
+                        ${escapeHTML(novel.genre)}
+                    </span>
+
+
+                    <h2>
+                        ${escapeHTML(novel.title)}
+                    </h2>
+
+
+                    <p>
+                        ${
+                            novel.description
+                                ? escapeHTML(novel.description)
+                                : "작품 소개가 없습니다."
+                        }
+                    </p>
+
+
+                    <div class="search-novel-meta">
+
+                        <span>
+                            ${escapeHTML(
+                                novel.author_nickname || "알 수 없음"
+                            )}
+                        </span>
+
+                        <span>
+                            ${date}
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </a>
+
+        `;
+
+    });
+
+
+    searchResults.innerHTML = html;
+
+}
+
+
+// ========================================
+// 검색 실행
+// ========================================
+
+function performSearch() {
+
+    const keyword =
+        searchInput.value
+            .trim()
+            .toLowerCase();
+
+
+    if (!keyword) {
+
+        searchCount.textContent =
+            `전체 ${novels.length}개의 소설`;
+
+        renderResults(novels);
+
+        return;
+
+    }
+
+
+    const results =
+        novels.filter(function (novel) {
+
+            const title =
+                (novel.title || "")
+                    .toLowerCase();
+
+            return title.includes(keyword);
+
+        });
+
+
+    searchCount.textContent =
+        `검색 결과 ${results.length}개`;
+
+
+    renderResults(results);
+
+}
+
+
+// ========================================
+// 버튼
+// ========================================
+
+searchButton.addEventListener(
+    "click",
+    performSearch
+);
+
+
+// ========================================
+// Enter
+// ========================================
+
+searchInput.addEventListener(
+    "keydown",
+    function (event) {
+
+        if (event.key === "Enter") {
+            performSearch();
+        }
+
+    }
+);
+
+
+// ========================================
+// 입력 즉시 검색
+// ========================================
+
+searchInput.addEventListener(
+    "input",
+    performSearch
+);
+
+
+// ========================================
+// 시작
+// ========================================
+
+loadNovels();
+
+</script>
+
+
+</body>
+
+</html>

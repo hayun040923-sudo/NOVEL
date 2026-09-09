@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>새 소설 작성 - NOVEL</title>
+
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+    ></script>
+
+    <script src="js/supabase.js"></script>
+
+</head>
+
+
+<body>
+
+
+<!-- ========================================
+     헤더
+======================================== -->
+
+<header>
+
+    <div class="header-inner">
+
+        <a
+            href="index.html"
+            class="logo"
+        >
+            NOVEL
+        </a>
+
+
+        <nav>
+
+            <a href="novels.html">
+                소설
+            </a>
+
+            <a href="#">
+                검색
+            </a>
+
+            </a>
+
+        </nav>
+
+
+        <div class="header-right">
+
+            <a href="account.html">
+                내 계정
+            </a>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+
+<!-- ========================================
+     소설 작성
+======================================== -->
+
+<main class="write-page">
+
+    <div class="write-box">
+
+
+        <p class="account-small">
+            WRITE NOVEL
+        </p>
+
+
+        <h1>
+            새 소설 작성
+        </h1>
+
+
+        <p class="write-description">
+            새로운 이야기를 시작해보세요.
+        </p>
+
+
+
+        <form id="write-form">
+
+
+            <!-- =================================
+                 제목
+            ================================= -->
+
+            <div class="write-field">
+
+                <label for="title">
+                    소설 제목
+                </label>
+
+
+                <input
+                    type="text"
+                    id="title"
+                    placeholder="소설 제목을 입력하세요"
+                    maxlength="100"
+                    required
+                >
+
+            </div>
+
+
+
+            <!-- =================================
+                 장르
+            ================================= -->
+
+            <div class="write-field">
+
+                <label for="genre">
+                    장르
+                </label>
+
+
+                <select
+                    id="genre"
+                    required
+                >
+
+                    <option value="">
+                        장르를 선택하세요
+                    </option>
+
+
+                    <option value="판타지">
+                        판타지
+                    </option>
+
+
+                    <option value="현대판타지">
+                        현대판타지
+                    </option>
+
+
+                    <option value="로맨스">
+                        로맨스
+                    </option>
+
+
+                    <option value="로맨스판타지">
+                        로맨스판타지
+                    </option>
+
+
+                    <option value="무협">
+                        무협
+                    </option>
+
+
+                    <option value="스릴러">
+                        스릴러
+                    </option>
+
+
+                    <option value="공포">
+                        공포
+                    </option>
+
+
+                    <option value="SF">
+                        SF
+                    </option>
+
+
+                    <option value="드라마">
+                        드라마
+                    </option>
+
+
+                    <option value="기타">
+                        기타
+                    </option>
+
+                </select>
+
+            </div>
+
+
+
+            <!-- =================================
+                 작품 소개
+            ================================= -->
+
+            <div class="write-field">
+
+                <label for="description">
+                    작품 소개
+                </label>
+
+
+                <textarea
+                    id="description"
+                    rows="5"
+                    maxlength="1000"
+                    placeholder="독자들에게 보여줄 작품 소개를 입력하세요"
+                ></textarea>
+
+            </div>
+
+
+
+            <!-- =================================
+                 작품 표지
+            ================================= -->
+
+            <div class="write-field">
+
+                <label for="cover">
+                    작품 표지
+                </label>
+
+
+                <input
+                    type="file"
+                    id="cover"
+                    accept="image/png,image/jpeg,image/webp"
+                >
+
+
+                <p class="cover-help">
+                    JPG, PNG, WEBP 이미지 / 최대 5MB
+                </p>
+
+
+                <div
+                    id="cover-preview"
+                    class="cover-preview"
+                >
+
+                    <span>
+                        표지를 선택하면
+                        미리보기가 표시됩니다.
+                    </span>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================
+                 본문
+            ================================= -->
+
+            <div class="write-field">
+
+                <label for="content">
+                    본문
+                </label>
+
+
+                <textarea
+                    id="content"
+                    class="novel-content-input"
+                    rows="25"
+                    placeholder="소설 본문을 입력하세요"
+                    required
+                ></textarea>
+
+            </div>
+
+
+
+            <!-- =================================
+                 등록 버튼
+            ================================= -->
+
+            <button
+                type="submit"
+                id="submit-button"
+                class="write-submit"
+            >
+                소설 등록하기
+            </button>
+
+
+        </form>
+
+
+
+        <!-- 메시지 -->
+
+        <div
+            id="write-message"
+            class="write-message"
+        ></div>
+
+
+    </div>
+
+</main>
+
+
+
+<script>
+
+
+// ========================================
+// 표지 미리보기
+// ========================================
+
+const coverInput =
+    document.getElementById("cover");
+
+
+const coverPreview =
+    document.getElementById("cover-preview");
+
+
+coverInput.addEventListener(
+    "change",
+    function () {
+
+        const file =
+            this.files[0];
+
+
+        // 선택 취소
+
+        if (!file) {
+
+            coverPreview.innerHTML = `
+                <span>
+                    표지를 선택하면
+                    미리보기가 표시됩니다.
+                </span>
+            `;
+
+            return;
+
+        }
+
+
+        // 이미지 확인
+
+        if (!file.type.startsWith("image/")) {
+
+            alert(
+                "이미지 파일만 선택할 수 있습니다."
+            );
+
+            this.value = "";
+
+            coverPreview.innerHTML = `
+                <span>
+                    표지를 선택하면
+                    미리보기가 표시됩니다.
+                </span>
+            `;
+
+            return;
+
+        }
+
+
+        // 5MB 확인
+
+        if (
+            file.size >
+            5 * 1024 * 1024
+        ) {
+
+            alert(
+                "표지 이미지는 5MB 이하만 사용할 수 있습니다."
+            );
+
+            this.value = "";
+
+            coverPreview.innerHTML = `
+                <span>
+                    표지를 선택하면
+                    미리보기가 표시됩니다.
+                </span>
+            `;
+
+            return;
+
+        }
+
+
+        // 기존 미리보기 제거
+
+        coverPreview.innerHTML = "";
+
+
+        // 이미지 미리보기
+
+        const image =
+            document.createElement("img");
+
+
+        image.src =
+            URL.createObjectURL(file);
+
+
+        image.alt =
+            "표지 미리보기";
+
+
+        coverPreview.appendChild(
+            image
+        );
+
+    }
+);
+
+
+
+// ========================================
+// 작가 권한 확인
+// ========================================
+
+async function checkWriter() {
+
+    const result =
+        await supabaseClient.auth.getUser();
+
+
+    const user =
+        result.data.user;
+
+
+    // 로그인하지 않은 경우
+
+    if (!user) {
+
+        window.location.href =
+            "login.html";
+
+        return null;
+
+    }
+
+
+    // 프로필 확인
+
+    const profileResult =
+        await supabaseClient
+            .from("profiles")
+            .select(
+                "id, nickname, role, writer_status"
+            )
+            .eq(
+                "id",
+                user.id
+            )
+            .single();
+
+
+    if (profileResult.error) {
+
+        console.error(
+            "프로필 확인 오류:",
+            profileResult.error
+        );
+
+
+        alert(
+            "계정 정보를 확인할 수 없습니다."
+        );
+
+
+        window.location.href =
+            "account.html";
+
+
+        return null;
+
+    }
+
+
+    const profile =
+        profileResult.data;
+
+
+    // 승인된 작가인지 확인
+
+    if (
+        profile.role !== "writer" ||
+        profile.writer_status !== "approved"
+    ) {
+
+        alert(
+            "승인된 작가만 소설을 작성할 수 있습니다."
+        );
+
+
+        window.location.href =
+            "account.html";
+
+
+        return null;
+
+    }
+
+
+    return user;
+
+}
+
+
+
+// ========================================
+// 표지 업로드
+// ========================================
+
+async function uploadCover(
+    user,
+    file
+) {
+
+    if (!file) {
+
+        return null;
+
+    }
+
+
+    // 파일 확장자
+
+    const extension =
+        file.name
+            .split(".")
+            .pop()
+            .toLowerCase();
+
+
+    // 안전한 파일 이름
+
+    const fileName =
+        user.id +
+        "-" +
+        Date.now() +
+        "." +
+        extension;
+
+
+    // Storage 업로드
+
+    const uploadResult =
+        await supabaseClient
+            .storage
+            .from("covers")
+            .upload(
+                fileName,
+                file,
+                {
+                    cacheControl: "3600",
+                    upsert: false
+                }
+            );
+
+
+    if (uploadResult.error) {
+
+        console.error(
+            "표지 업로드 오류:",
+            uploadResult.error
+        );
+
+
+        throw uploadResult.error;
+
+    }
+
+
+    // 공개 URL
+
+    const publicUrlResult =
+        supabaseClient
+            .storage
+            .from("covers")
+            .getPublicUrl(
+                fileName
+            );
+
+
+    return (
+        publicUrlResult
+            .data
+            .publicUrl
+    );
+
+}
+
+
+
+// ========================================
+// 소설 등록
+// ========================================
+
+async function createNovel(user) {
+
+    const title =
+        document
+            .getElementById("title")
+            .value
+            .trim();
+
+
+    const genre =
+        document
+            .getElementById("genre")
+            .value;
+
+
+    const description =
+        document
+            .getElementById("description")
+            .value
+            .trim();
+
+
+    const content =
+        document
+            .getElementById("content")
+            .value
+            .trim();
+
+
+    const coverFile =
+        document
+            .getElementById("cover")
+            .files[0];
+
+
+    const submitButton =
+        document
+            .getElementById("submit-button");
+
+
+    const message =
+        document
+            .getElementById("write-message");
+
+
+
+    // =====================================
+    // 기본 검사
+    // =====================================
+
+    if (!title) {
+
+        alert(
+            "소설 제목을 입력해주세요."
+        );
+
+        return;
+
+    }
+
+
+    if (!genre) {
+
+        alert(
+            "장르를 선택해주세요."
+        );
+
+        return;
+
+    }
+
+
+    if (!content) {
+
+        alert(
+            "소설 본문을 입력해주세요."
+        );
+
+        return;
+
+    }
+
+
+
+    // =====================================
+    // 표지 검사
+    // =====================================
+
+    if (coverFile) {
+
+        if (
+            !coverFile.type.startsWith("image/")
+        ) {
+
+            alert(
+                "표지는 이미지 파일만 사용할 수 있습니다."
+            );
+
+            return;
+
+        }
+
+
+        if (
+            coverFile.size >
+            5 * 1024 * 1024
+        ) {
+
+            alert(
+                "표지 이미지는 5MB 이하만 사용할 수 있습니다."
+            );
+
+            return;
+
+        }
+
+    }
+
+
+
+    // =====================================
+    // 버튼 잠금
+    // =====================================
+
+    submitButton.disabled = true;
+
+    submitButton.textContent =
+        "등록하는 중...";
+
+
+    message.textContent = "";
+
+
+
+    try {
+
+
+        // =================================
+        // 표지 업로드
+        // =================================
+
+        let coverUrl = null;
+
+
+        if (coverFile) {
+
+            submitButton.textContent =
+                "표지를 업로드하는 중...";
+
+
+            coverUrl =
+                await uploadCover(
+                    user,
+                    coverFile
+                );
+
+        }
+
+
+
+        // =================================
+        // 소설 등록
+        // =================================
+
+        submitButton.textContent =
+            "소설을 등록하는 중...";
+
+
+        const result =
+            await supabaseClient
+                .from("novels")
+                .insert({
+
+                    author_id:
+                        user.id,
+
+                    title:
+                        title,
+
+                    genre:
+                        genre,
+
+                    description:
+                        description || null,
+
+                    content:
+                        content,
+
+                    cover_url:
+                        coverUrl,
+
+                    status:
+                        "published"
+
+                })
+                .select()
+                .single();
+
+
+
+        // 등록 오류
+
+        if (result.error) {
+
+            console.error(
+                "소설 등록 오류:",
+                result.error
+            );
+
+
+            throw result.error;
+
+        }
+
+
+
+        // =================================
+        // 성공
+        // =================================
+
+        const novel =
+            result.data;
+
+
+        message.innerHTML = `
+            소설이 성공적으로 등록되었습니다.
+        `;
+
+
+        alert(
+            "소설 등록이 완료되었습니다!"
+        );
+
+
+        // 작품 페이지로 이동
+
+        window.location.href =
+            "novel.html?id=" +
+            novel.id;
+
+
+    } catch (error) {
+
+        console.error(
+            "소설 등록 실패:",
+            error
+        );
+
+
+        alert(
+            "소설 등록에 실패했습니다.\n\n" +
+            error.message
+        );
+
+
+        submitButton.disabled =
+            false;
+
+
+        submitButton.textContent =
+            "소설 등록하기";
+
+    }
+
+}
+
+
+
+// ========================================
+// 페이지 시작
+// ========================================
+
+async function startWritePage() {
+
+    const user =
+        await checkWriter();
+
+
+    if (!user) {
+
+        return;
+
+    }
+
+
+    const form =
+        document.getElementById(
+            "write-form"
+        );
+
+
+    form.addEventListener(
+        "submit",
+        function (event) {
+
+            event.preventDefault();
+
+
+            createNovel(user);
+
+        }
+    );
+
+}
+
+
+startWritePage();
+
+</script>
+
+
+</body>
+
+</html>
