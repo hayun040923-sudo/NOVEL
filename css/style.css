@@ -3706,4 +3706,517 @@ footer {
         flex: 1;
     }
 
+}/* ========================================
+   작품 좋아요
+======================================== */
+
+.novel-like-area {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 24px;
+}
+
+
+.novel-like-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    height: 42px;
+    padding: 0 18px;
+
+    border: 1px solid #ddd;
+    border-radius: 9px;
+
+    background: #fff;
+    color: #444;
+
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background .2s ease,
+        border-color .2s ease,
+        color .2s ease,
+        transform .15s ease;
+}
+
+
+.novel-like-button:hover {
+    background: #f7f7f7;
+    border-color: #ccc;
+    transform: translateY(-1px);
+}
+
+
+.novel-like-button:active {
+    transform: translateY(0);
+}
+
+
+.novel-like-button:disabled {
+    opacity: .6;
+    cursor: wait;
+    transform: none;
+}
+
+
+.novel-like-button.liked {
+    border-color: #222;
+    background: #222;
+    color: #fff;
+}
+
+
+.novel-like-button.liked:hover {
+    background: #000;
+    border-color: #000;
+}
+
+
+.novel-like-icon {
+    font-size: 17px;
+    line-height: 1;
+}
+
+
+.novel-like-count {
+    font-size: 13px;
+    color: #888;
+}
+
+
+.novel-like-count strong {
+    margin-left: 3px;
+    color: #333;
+    font-weight: 700;
+}
+
+
+@media (max-width: 700px) {
+
+    .novel-like-area {
+        margin-top: 20px;
+        gap: 10px;
+    }
+
+
+    .novel-like-button {
+        height: 40px;
+        padding: 0 15px;
+    }
+
+}/* ========================================
+   에피소드 댓글
+======================================== */
+
+.episode-comments-section {
+    margin-top: 70px;
+    padding-top: 45px;
+    border-top: 1px solid #e8e8e8;
+}
+
+
+.episode-comments-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 25px;
+}
+
+
+.episode-comments-small {
+    display: block;
+    margin-bottom: 7px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #aaa;
+}
+
+
+.episode-comments-header h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: #222;
+}
+
+
+.episode-comment-count {
+    font-size: 13px;
+    color: #999;
+}
+
+
+
+/* ========================================
+   댓글 작성
+======================================== */
+
+.episode-comment-form-area {
+    padding: 18px;
+    margin-bottom: 30px;
+    border: 1px solid #e5e5e5;
+    border-radius: 12px;
+    background: #fafafa;
+}
+
+
+.episode-comment-input {
+    display: block;
+
+    width: 100%;
+    min-height: 110px;
+
+    padding: 14px;
+
+    box-sizing: border-box;
+
+    border: 1px solid #ddd;
+    border-radius: 8px;
+
+    background: #fff;
+    color: #333;
+
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.6;
+
+    resize: vertical;
+
+    outline: none;
+
+    transition:
+        border-color .2s ease,
+        background .2s ease;
+}
+
+
+.episode-comment-input:focus {
+    border-color: #999;
+}
+
+
+.episode-comment-input::placeholder {
+    color: #aaa;
+}
+
+
+.episode-comment-form-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-top: 10px;
+}
+
+
+.episode-comment-limit {
+    font-size: 11px;
+    color: #aaa;
+}
+
+
+.episode-comment-submit {
+    height: 38px;
+
+    padding: 0 16px;
+
+    border: 1px solid #222;
+    border-radius: 8px;
+
+    background: #222;
+    color: #fff;
+
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background .2s ease,
+        transform .15s ease;
+}
+
+
+.episode-comment-submit:hover {
+    background: #000;
+    transform: translateY(-1px);
+}
+
+
+.episode-comment-submit:active {
+    transform: translateY(0);
+}
+
+
+.episode-comment-submit:disabled {
+    opacity: .6;
+    cursor: wait;
+    transform: none;
+}
+
+
+
+/* ========================================
+   로그인 안내
+======================================== */
+
+.episode-comment-login-message {
+    padding: 22px;
+
+    margin-bottom: 30px;
+
+    border: 1px solid #e8e8e8;
+    border-radius: 10px;
+
+    background: #fafafa;
+
+    text-align: center;
+
+    font-size: 13px;
+    color: #888;
+}
+
+
+.episode-comment-login-message a {
+    margin-left: 4px;
+
+    color: #333;
+
+    font-weight: 600;
+    text-decoration: underline;
+}
+
+
+
+/* ========================================
+   댓글 목록
+======================================== */
+
+.episode-comments-list {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.episode-comment-item {
+    position: relative;
+
+    padding: 22px 0;
+
+    border-bottom: 1px solid #eee;
+}
+
+
+.episode-comment-item:first-child {
+    border-top: 1px solid #eee;
+}
+
+
+.episode-comment-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-bottom: 12px;
+}
+
+
+.episode-comment-user {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    min-width: 0;
+}
+
+
+.episode-comment-avatar {
+    width: 34px;
+    height: 34px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #eee;
+    color: #555;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+
+.episode-comment-user strong {
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    color: #333;
+}
+
+
+.episode-comment-date {
+    flex-shrink: 0;
+
+    font-size: 11px;
+    color: #aaa;
+}
+
+
+.episode-comment-content {
+    padding-left: 44px;
+
+    font-size: 14px;
+    line-height: 1.75;
+
+    color: #555;
+
+    word-break: break-word;
+}
+
+
+.episode-comment-delete {
+    display: block;
+
+    margin-top: 10px;
+    margin-left: 44px;
+
+    padding: 0;
+
+    border: 0;
+
+    background: transparent;
+    color: #aaa;
+
+    font-family: inherit;
+    font-size: 11px;
+
+    cursor: pointer;
+}
+
+
+.episode-comment-delete:hover {
+    color: #555;
+}
+
+
+
+/* ========================================
+   댓글 없음
+======================================== */
+
+.episode-comments-empty {
+    padding: 45px 20px;
+
+    text-align: center;
+
+    font-size: 14px;
+    color: #999;
+}
+
+
+.episode-comments-empty span {
+    display: block;
+
+    margin-top: 7px;
+
+    font-size: 12px;
+    color: #bbb;
+}
+
+
+.episode-comments-loading {
+    padding: 30px;
+
+    text-align: center;
+
+    font-size: 13px;
+    color: #aaa;
+}
+
+
+.episode-comments-error {
+    padding: 30px;
+
+    border: 1px solid #eee;
+    border-radius: 10px;
+
+    background: #fafafa;
+
+    text-align: center;
+
+    font-size: 13px;
+    color: #999;
+}
+
+
+
+/* ========================================
+   모바일
+======================================== */
+
+@media (max-width: 700px) {
+
+    .episode-comments-section {
+        margin-top: 50px;
+        padding-top: 35px;
+    }
+
+
+    .episode-comments-header h2 {
+        font-size: 21px;
+    }
+
+
+    .episode-comment-form-area {
+        padding: 14px;
+    }
+
+
+    .episode-comment-input {
+        min-height: 100px;
+        font-size: 13px;
+    }
+
+
+    .episode-comment-header {
+        align-items: flex-start;
+    }
+
+
+    .episode-comment-date {
+        font-size: 10px;
+    }
+
+
+    .episode-comment-content {
+        padding-left: 44px;
+        font-size: 13px;
+    }
+
+
+    .episode-comment-delete {
+        margin-left: 44px;
+    }
+
 }
