@@ -20,16 +20,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase.js"></script>
 
-    <!-- 저장된 테마 즉시 적용 -->
-    <script>
-        const savedTheme =
-            localStorage.getItem("novel-theme");
-
-        if (savedTheme === "dark") {
-            document.documentElement.classList.add("dark-mode");
-        }
-    </script>
-
 </head>
 
 
@@ -60,8 +50,6 @@
 
             <a href="search.html">
                 검색
-            </a>
-
             </a>
 
         </nav>
@@ -164,12 +152,14 @@
 
 <script>
 
+
 // ========================================
 // 로그인 상태 확인
 // ========================================
 
 const authMenu =
     document.getElementById("auth-menu");
+
 
 
 async function updateAuthMenu() {
@@ -185,6 +175,8 @@ async function updateAuthMenu() {
             userResult.data.user;
 
 
+        // 로그인하지 않은 경우
+
         if (!user) {
 
             authMenu.innerHTML = `
@@ -197,6 +189,8 @@ async function updateAuthMenu() {
         }
 
 
+        // 프로필 확인
+
         const profileResult =
             await supabaseClient
                 .from("profiles")
@@ -206,6 +200,8 @@ async function updateAuthMenu() {
                 .eq("id", user.id)
                 .single();
 
+
+        // 프로필 확인 실패
 
         if (profileResult.error) {
 
@@ -223,6 +219,13 @@ async function updateAuthMenu() {
                     </a>
 
                     <button
+                        id="notification-button"
+                        type="button"
+                    >
+                        🔔 알림 받기
+                    </button>
+
+                    <button
                         id="logout-button"
                         type="button"
                     >
@@ -231,6 +234,9 @@ async function updateAuthMenu() {
 
                 </div>
             `;
+
+
+            setupNotification();
 
             setupLogout();
 
@@ -250,8 +256,17 @@ async function updateAuthMenu() {
                     내 계정
                 </a>
 
+                <button
+                    id="notification-button"
+                    type="button"
+                >
+                    🔔 알림 받기
+                </button>
+
         `;
 
+
+        // 작가 페이지
 
         if (
             profile.role === "writer" &&
@@ -267,7 +282,11 @@ async function updateAuthMenu() {
         }
 
 
-        if (profile.role === "admin") {
+        // 관리자 페이지
+
+        if (
+            profile.role === "admin"
+        ) {
 
             menuHTML += `
                 <a href="admin.html">
@@ -296,6 +315,10 @@ async function updateAuthMenu() {
             menuHTML;
 
 
+        // 기능 연결
+
+        setupNotification();
+
         setupLogout();
 
 
@@ -314,6 +337,161 @@ async function updateAuthMenu() {
         `;
 
     }
+
+}
+
+
+
+// ========================================
+// 알림 권한 요청
+// ========================================
+
+function setupNotification() {
+
+    const notificationButton =
+        document.getElementById(
+            "notification-button"
+        );
+
+
+    if (!notificationButton) {
+        return;
+    }
+
+
+    // 브라우저가 알림 기능을 지원하지 않는 경우
+
+    if (!("Notification" in window)) {
+
+        notificationButton.textContent =
+            "알림을 지원하지 않는 브라우저";
+
+        notificationButton.disabled =
+            true;
+
+        return;
+    }
+
+
+    // 이미 알림을 허용한 경우
+
+    if (
+        Notification.permission === "granted"
+    ) {
+
+        notificationButton.textContent =
+            "🔔 알림 켜짐";
+
+        return;
+    }
+
+
+    // 이미 차단한 경우
+
+    if (
+        Notification.permission === "denied"
+    ) {
+
+        notificationButton.textContent =
+            "🔕 알림 차단됨";
+
+        return;
+    }
+
+
+    // 버튼 클릭
+
+    notificationButton.addEventListener(
+        "click",
+        async function () {
+
+            notificationButton.disabled =
+                true;
+
+            notificationButton.textContent =
+                "알림 설정 중...";
+
+
+            try {
+
+                const permission =
+                    await Notification.requestPermission();
+
+
+                // 허용
+
+                if (
+                    permission === "granted"
+                ) {
+
+                    notificationButton.textContent =
+                        "🔔 알림 켜짐";
+
+
+                    // 테스트 알림
+
+                    new Notification(
+                        "NOVEL",
+                        {
+                            body:
+                                "알림이 정상적으로 활성화되었습니다!",
+                            icon:
+                                "favicon.ico"
+                        }
+                    );
+
+
+                    alert(
+                        "알림이 활성화되었습니다!"
+                    );
+
+                    return;
+                }
+
+
+                // 거부
+
+                if (
+                    permission === "denied"
+                ) {
+
+                    notificationButton.textContent =
+                        "🔕 알림 차단됨";
+
+
+                    alert(
+                        "알림이 차단되었습니다.\n\n" +
+                        "나중에 브라우저 설정에서 알림 권한을 변경할 수 있습니다."
+                    );
+
+                    return;
+                }
+
+
+                // 기타
+
+                notificationButton.textContent =
+                    "🔔 알림 받기";
+
+            } catch (error) {
+
+                console.error(
+                    "알림 권한 요청 오류:",
+                    error
+                );
+
+
+                notificationButton.textContent =
+                    "🔔 알림 받기";
+
+            }
+
+
+            notificationButton.disabled =
+                false;
+
+        }
+    );
 
 }
 
@@ -340,7 +518,8 @@ function setupLogout() {
         "click",
         async function () {
 
-            logoutButton.disabled = true;
+            logoutButton.disabled =
+                true;
 
             logoutButton.textContent =
                 "로그아웃 중...";
@@ -358,6 +537,7 @@ function setupLogout() {
                     "로그아웃 실패: " +
                     result.error.message
                 );
+
 
                 logoutButton.disabled =
                     false;
@@ -383,6 +563,7 @@ function setupLogout() {
 // ========================================
 
 updateAuthMenu();
+
 
 </script>
 
