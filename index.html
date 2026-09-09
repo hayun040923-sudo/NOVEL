@@ -20,7 +20,7 @@
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- NOVEL Supabase 설정 -->
+    <!-- NOVEL Supabase -->
     <script src="js/supabase.js"></script>
 
 </head>
@@ -256,7 +256,7 @@ async function registerServiceWorker() {
 
 
 // ==================================================
-// 현재 Push Subscription 가져오기
+// 현재 Push Subscription 확인
 // ==================================================
 
 async function getPushSubscription() {
@@ -278,7 +278,7 @@ async function getPushSubscription() {
 
 
 // ==================================================
-// 알림 버튼 상태 업데이트
+// 알림 버튼 상태 확인
 // ==================================================
 
 async function updateNotificationButton() {
@@ -294,7 +294,9 @@ async function updateNotificationButton() {
     }
 
 
-    // 알림 미지원
+    // ----------------------------------------
+    // Notification 미지원
+    // ----------------------------------------
 
     if (!("Notification" in window)) {
 
@@ -309,7 +311,9 @@ async function updateNotificationButton() {
     }
 
 
-    // Push 미지원
+    // ----------------------------------------
+    // Push API 미지원
+    // ----------------------------------------
 
     if (!("PushManager" in window)) {
 
@@ -324,7 +328,9 @@ async function updateNotificationButton() {
     }
 
 
-    // 권한 차단
+    // ----------------------------------------
+    // 알림 권한 차단
+    // ----------------------------------------
 
     if (
         Notification.permission === "denied"
@@ -343,21 +349,36 @@ async function updateNotificationButton() {
 
     try {
 
+        // ----------------------------------------
+        // 기존 구독 확인
+        // ----------------------------------------
+
         const subscription =
             await getPushSubscription();
 
 
-        // 이미 구독되어 있음
-
         if (subscription) {
+
+            // 이미 구독됨
 
             button.textContent =
                 "🔔 알림 켜짐";
 
+            // ★ 중요
+            // disabled 상태로 만들지 않는다.
+
+            button.disabled =
+                false;
+
         } else {
+
+            // 아직 구독하지 않음
 
             button.textContent =
                 "🔔 알림 받기";
+
+            button.disabled =
+                false;
 
         }
 
@@ -372,6 +393,9 @@ async function updateNotificationButton() {
         button.textContent =
             "🔔 알림 받기";
 
+        button.disabled =
+            false;
+
     }
 
 }
@@ -379,7 +403,7 @@ async function updateNotificationButton() {
 
 
 // ==================================================
-// Supabase에 Push Subscription 저장
+// Push Subscription을 Supabase에 저장
 // ==================================================
 
 async function savePushSubscription(
@@ -442,11 +466,22 @@ async function savePushSubscription(
 
     if (result.error) {
 
+        console.error(
+            "푸시 구독 저장 실패:",
+            result.error
+        );
+
+
         throw new Error(
             result.error.message
         );
 
     }
+
+
+    console.log(
+        "Push Subscription Supabase 저장 완료"
+    );
 
 }
 
@@ -469,16 +504,13 @@ async function setupNotification() {
     }
 
 
-    // 처음 상태 확인
-
-    await updateNotificationButton();
-
-
-    // 이미 이벤트가 연결된 경우 방지
+    // 이미 이벤트 연결했으면 다시 연결하지 않음
 
     if (
         button.dataset.notificationReady === "true"
     ) {
+
+        await updateNotificationButton();
 
         return;
 
@@ -489,6 +521,11 @@ async function setupNotification() {
         "true";
 
 
+    // 처음 버튼 상태 확인
+
+    await updateNotificationButton();
+
+
     // ==================================================
     // 버튼 클릭
     // ==================================================
@@ -497,26 +534,18 @@ async function setupNotification() {
         "click",
         async function () {
 
-            // 이미 작업 중이면 무시
+            // 이미 처리 중이면 무시
 
             if (button.disabled) {
                 return;
             }
 
 
-            button.disabled =
-                true;
-
-
-            button.textContent =
-                "알림 설정 중...";
-
-
             try {
 
-                // ==================================================
+                // ========================================
                 // 로그인 확인
-                // ==================================================
+                // ========================================
 
                 const userResult =
                     await supabaseClient
@@ -531,20 +560,88 @@ async function setupNotification() {
                 if (!user) {
 
                     alert(
-                        "로그인이 필요합니다."
+                        "알림을 사용하려면 로그인이 필요합니다."
                     );
+
 
                     window.location.href =
                         "login.html";
+
 
                     return;
 
                 }
 
 
-                // ==================================================
-                // 알림 권한 확인
-                // ==================================================
+                // ========================================
+                // 이미 알림이 허용되어 있는지 확인
+                // ========================================
+
+                if (
+                    Notification.permission === "denied"
+                ) {
+
+                    alert(
+                        "브라우저에서 NOVEL 알림이 차단되어 있습니다.\n" +
+                        "Edge 사이트 설정에서 알림을 허용해주세요."
+                    );
+
+
+                    button.textContent =
+                        "🔕 알림 차단됨";
+
+
+                    return;
+
+                }
+
+
+                // ========================================
+                // 기존 Subscription 확인
+                // ========================================
+
+                const registration =
+                    await registerServiceWorker();
+
+
+                let subscription =
+                    await registration
+                        .pushManager
+                        .getSubscription();
+
+
+                // ========================================
+                // 이미 구독되어 있는 경우
+                // ========================================
+
+                if (subscription) {
+
+                    console.log(
+                        "기존 Push Subscription 사용"
+                    );
+
+
+                    button.textContent =
+                        "🔔 알림 켜짐";
+
+
+                    button.disabled =
+                        false;
+
+
+                    alert(
+                        "이미 알림이 켜져 있습니다."
+                    );
+
+
+                    return;
+
+                }
+
+
+                // ========================================
+                // 알림 권한 요청
+                // ========================================
 
                 let permission =
                     Notification.permission;
@@ -567,51 +664,9 @@ async function setupNotification() {
                     button.textContent =
                         "🔕 알림 차단됨";
 
-                    return;
 
-                }
-
-
-                // ==================================================
-                // Service Worker
-                // ==================================================
-
-                const registration =
-                    await registerServiceWorker();
-
-
-                // ==================================================
-                // 기존 Subscription 확인
-                // ==================================================
-
-                let subscription =
-                    await registration
-                        .pushManager
-                        .getSubscription();
-
-
-                // ==================================================
-                // 이미 구독되어 있다면
-                // ==================================================
-
-                if (subscription) {
-
-                    console.log(
-                        "기존 Push Subscription 사용"
-                    );
-
-
-                    // 혹시 DB에 저장되지 않았을 경우를
-                    // 대비하여 다시 저장
-
-                    await savePushSubscription(
-                        subscription,
-                        user
-                    );
-
-
-                    button.textContent =
-                        "🔔 알림 켜짐";
+                    button.disabled =
+                        false;
 
 
                     return;
@@ -619,9 +674,17 @@ async function setupNotification() {
                 }
 
 
-                // ==================================================
-                // 새 Subscription 생성
-                // ==================================================
+                // ========================================
+                // 새 Push Subscription 생성
+                // ========================================
+
+                button.disabled =
+                    true;
+
+
+                button.textContent =
+                    "알림 설정 중...";
+
 
                 console.log(
                     "새 Push Subscription 생성"
@@ -650,9 +713,9 @@ async function setupNotification() {
                 );
 
 
-                // ==================================================
+                // ========================================
                 // Supabase 저장
-                // ==================================================
+                // ========================================
 
                 await savePushSubscription(
                     subscription,
@@ -660,12 +723,16 @@ async function setupNotification() {
                 );
 
 
-                // ==================================================
+                // ========================================
                 // 완료
-                // ==================================================
+                // ========================================
 
                 button.textContent =
                     "🔔 알림 켜짐";
+
+
+                button.disabled =
+                    false;
 
 
                 alert(
@@ -681,7 +748,13 @@ async function setupNotification() {
                 );
 
 
-                // 다시 현재 상태 확인
+                // 오류가 발생해도 버튼은 다시 활성화
+
+                button.disabled =
+                    false;
+
+
+                // 현재 구독 상태 다시 확인
 
                 try {
 
@@ -716,10 +789,6 @@ async function setupNotification() {
 
             }
 
-
-            button.disabled =
-                false;
-
         }
     );
 
@@ -743,6 +812,8 @@ function setupLogout() {
         return;
     }
 
+
+    // 중복 이벤트 방지
 
     if (
         logoutButton.dataset.logoutReady === "true"
@@ -827,9 +898,9 @@ async function updateAuthMenu() {
 
     try {
 
-        // ==================================================
-        // 현재 사용자
-        // ==================================================
+        // ========================================
+        // 현재 로그인 사용자 확인
+        // ========================================
 
         const userResult =
             await supabaseClient
@@ -841,9 +912,9 @@ async function updateAuthMenu() {
             userResult.data.user;
 
 
-        // ==================================================
+        // ========================================
         // 로그아웃 상태
-        // ==================================================
+        // ========================================
 
         if (!user) {
 
@@ -855,14 +926,15 @@ async function updateAuthMenu() {
 
             `;
 
+
             return;
 
         }
 
 
-        // ==================================================
+        // ========================================
         // 프로필 가져오기
-        // ==================================================
+        // ========================================
 
         const profileResult =
             await supabaseClient
@@ -877,9 +949,9 @@ async function updateAuthMenu() {
                 .single();
 
 
-        // ==================================================
+        // ========================================
         // 프로필 오류
-        // ==================================================
+        // ========================================
 
         if (profileResult.error) {
 
@@ -922,6 +994,7 @@ async function updateAuthMenu() {
 
             setupLogout();
 
+
             return;
 
         }
@@ -931,9 +1004,9 @@ async function updateAuthMenu() {
             profileResult.data;
 
 
-        // ==================================================
-        // 기본 사용자 메뉴
-        // ==================================================
+        // ========================================
+        // 기본 메뉴
+        // ========================================
 
         let menuHTML = `
 
@@ -954,9 +1027,9 @@ async function updateAuthMenu() {
         `;
 
 
-        // ==================================================
+        // ========================================
         // 작가 페이지
-        // ==================================================
+        // ========================================
 
         if (
             profile.role === "writer" &&
@@ -974,9 +1047,9 @@ async function updateAuthMenu() {
         }
 
 
-        // ==================================================
+        // ========================================
         // 관리자 페이지
-        // ==================================================
+        // ========================================
 
         if (
             profile.role === "admin"
@@ -993,9 +1066,9 @@ async function updateAuthMenu() {
         }
 
 
-        // ==================================================
+        // ========================================
         // 로그아웃
-        // ==================================================
+        // ========================================
 
         menuHTML += `
 
@@ -1011,17 +1084,17 @@ async function updateAuthMenu() {
         `;
 
 
-        // ==================================================
+        // ========================================
         // 메뉴 적용
-        // ==================================================
+        // ========================================
 
         authMenu.innerHTML =
             menuHTML;
 
 
-        // ==================================================
+        // ========================================
         // 기능 연결
-        // ==================================================
+        // ========================================
 
         await setupNotification();
 
