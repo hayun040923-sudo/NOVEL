@@ -494,51 +494,143 @@ async function savePushSubscription(
 async function setupNotification() {
 
     const button =
-        document.getElementById(
-            "notification-button"
-        );
-
+        document.getElementById("notification-button");
 
     if (!button) {
         return;
     }
 
 
-    // 이미 이벤트 연결했으면 다시 연결하지 않음
-
-    if (
-        button.dataset.notificationReady === "true"
-    ) {
-
-        await updateNotificationButton();
-
+    // 중복 실행 방지
+    if (button.dataset.notificationReady === "true") {
         return;
+    }
+
+    button.dataset.notificationReady = "true";
+
+
+    // 처리 중인지 확인하는 변수
+    let isProcessing = false;
+
+
+    // ========================================
+    // 버튼 상태 확인
+    // ========================================
+
+    async function updateButton() {
+
+        // 알림 미지원
+        if (!("Notification" in window)) {
+
+            button.textContent = "🔕 알림 미지원";
+
+            button.style.opacity = "1";
+
+            return;
+        }
+
+
+        // Push 미지원
+        if (!("PushManager" in window)) {
+
+            button.textContent = "🔕 푸시 미지원";
+
+            button.style.opacity = "1";
+
+            return;
+        }
+
+
+        // 알림 차단
+        if (Notification.permission === "denied") {
+
+            button.textContent = "🔕 알림 차단됨";
+
+            button.style.opacity = "1";
+
+            return;
+        }
+
+
+        try {
+
+            const registration =
+                await registerServiceWorker();
+
+
+            const subscription =
+                await registration
+                    .pushManager
+                    .getSubscription();
+
+
+            if (subscription) {
+
+                button.textContent =
+                    "🔔 알림 켜짐";
+
+            } else {
+
+                button.textContent =
+                    "🔔 알림 받기";
+
+            }
+
+
+            // ★ 항상 불투명하게
+            button.style.opacity = "1";
+
+            // ★ disabled 속성 제거
+            button.disabled = false;
+
+            button.removeAttribute("disabled");
+
+        } catch (error) {
+
+            console.error(
+                "알림 상태 확인 실패:",
+                error
+            );
+
+
+            button.textContent =
+                "🔔 알림 받기";
+
+
+            button.style.opacity = "1";
+
+            button.disabled = false;
+
+            button.removeAttribute("disabled");
+
+        }
 
     }
 
 
-    button.dataset.notificationReady =
-        "true";
+    // 처음 상태 확인
+    await updateButton();
 
 
-    // 처음 버튼 상태 확인
-
-    await updateNotificationButton();
-
-
-    // ==================================================
+    // ========================================
     // 버튼 클릭
-    // ==================================================
+    // ========================================
 
     button.addEventListener(
         "click",
         async function () {
 
-            // 이미 처리 중이면 무시
-
-            if (button.disabled) {
+            // 처리 중이면 무시
+            if (isProcessing) {
                 return;
             }
+
+
+            isProcessing = true;
+
+
+            // ★ disabled를 사용하지 않음
+            button.style.opacity = "1";
 
 
             try {
@@ -569,40 +661,41 @@ async function setupNotification() {
 
 
                     return;
-
                 }
 
 
                 // ========================================
-                // 이미 알림이 허용되어 있는지 확인
+                // 알림 권한 확인
                 // ========================================
 
                 if (
                     Notification.permission === "denied"
                 ) {
 
-                    alert(
-                        "브라우저에서 NOVEL 알림이 차단되어 있습니다.\n" +
-                        "Edge 사이트 설정에서 알림을 허용해주세요."
-                    );
-
-
                     button.textContent =
                         "🔕 알림 차단됨";
 
 
-                    return;
+                    alert(
+                        "브라우저에서 NOVEL 알림이 차단되어 있습니다."
+                    );
 
+
+                    return;
                 }
 
 
                 // ========================================
-                // 기존 Subscription 확인
+                // Service Worker
                 // ========================================
 
                 const registration =
                     await registerServiceWorker();
 
+
+                // ========================================
+                // 기존 구독 확인
+                // ========================================
 
                 let subscription =
                     await registration
@@ -611,7 +704,7 @@ async function setupNotification() {
 
 
                 // ========================================
-                // 이미 구독되어 있는 경우
+                // 이미 구독되어 있음
                 // ========================================
 
                 if (subscription) {
@@ -621,12 +714,19 @@ async function setupNotification() {
                     );
 
 
+                    // 혹시 DB에 저장되지 않았을 경우 저장
+                    await savePushSubscription(
+                        subscription,
+                        user
+                    );
+
+
                     button.textContent =
                         "🔔 알림 켜짐";
 
 
-                    button.disabled =
-                        false;
+                    button.style.opacity =
+                        "1";
 
 
                     alert(
@@ -635,7 +735,6 @@ async function setupNotification() {
 
 
                     return;
-
                 }
 
 
@@ -665,12 +764,7 @@ async function setupNotification() {
                         "🔕 알림 차단됨";
 
 
-                    button.disabled =
-                        false;
-
-
                     return;
-
                 }
 
 
@@ -678,17 +772,12 @@ async function setupNotification() {
                 // 새 Push Subscription 생성
                 // ========================================
 
-                button.disabled =
-                    true;
-
-
                 button.textContent =
                     "알림 설정 중...";
 
 
-                console.log(
-                    "새 Push Subscription 생성"
-                );
+                button.style.opacity =
+                    "1";
 
 
                 subscription =
@@ -731,8 +820,8 @@ async function setupNotification() {
                     "🔔 알림 켜짐";
 
 
-                button.disabled =
-                    false;
+                button.style.opacity =
+                    "1";
 
 
                 alert(
@@ -748,18 +837,21 @@ async function setupNotification() {
                 );
 
 
-                // 오류가 발생해도 버튼은 다시 활성화
-
-                button.disabled =
-                    false;
+                button.style.opacity =
+                    "1";
 
 
                 // 현재 구독 상태 다시 확인
-
                 try {
 
+                    const registration =
+                        await registerServiceWorker();
+
+
                     const subscription =
-                        await getPushSubscription();
+                        await registration
+                            .pushManager
+                            .getSubscription();
 
 
                     if (subscription) {
@@ -786,6 +878,17 @@ async function setupNotification() {
                     "알림 설정 중 오류가 발생했습니다.\n\n" +
                     error.message
                 );
+
+            } finally {
+
+                // ★ 무조건 정상 상태로 복구
+                isProcessing = false;
+
+                button.disabled = false;
+
+                button.removeAttribute("disabled");
+
+                button.style.opacity = "1";
 
             }
 
