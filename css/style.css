@@ -4319,50 +4319,41 @@ footer {
     display: inline-flex;
     align-items: center;
     gap: 5px;
-
     border: none;
+    outline: none;
+    box-shadow: none;
     background: transparent;
-
     padding: 4px 6px;
-
     cursor: pointer;
-
     font-size: 14px;
-
     color: #777;
-
     transition:
         transform 0.15s ease,
         opacity 0.15s ease;
 }
 
-
 .episode-comment-like:hover {
     opacity: 0.75;
 }
-
 
 .episode-comment-like:active {
     transform: scale(0.92);
 }
 
+.episode-comment-like:focus {
+    outline: none;
+    box-shadow: none;
+}
 
 .episode-comment-like.liked {
     color: #e25555;
 }
-
 
 .comment-like-icon {
     font-size: 17px;
     line-height: 1;
 }
 
-
 .comment-like-count {
     font-size: 13px;
-}
-
-
-.episode-comment-delete {
-    margin-left: auto;
 }
