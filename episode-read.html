@@ -51,10 +51,8 @@
                 소설
             </a>
 
-            <a href="#">
+            <a href="search.html">
                 검색
-            </a>
-        
             </a>
 
         </nav>
@@ -130,7 +128,9 @@
         </article>
 
 
-        <!-- 이전 / 목록 / 다음 -->
+        <!-- ========================================
+             이전 / 목록 / 다음
+        ======================================== -->
 
         <div class="episode-navigation">
 
@@ -163,6 +163,116 @@
         </div>
 
 
+        <!-- ========================================
+             댓글
+        ======================================== -->
+
+        <section class="episode-comments-section">
+
+
+            <div class="episode-comments-header">
+
+                <div>
+
+                    <span class="episode-comments-small">
+                        COMMENTS
+                    </span>
+
+                    <h2>
+                        댓글
+                    </h2>
+
+                </div>
+
+
+                <span
+                    id="comment-count"
+                    class="episode-comment-count"
+                >
+                    0개
+                </span>
+
+            </div>
+
+
+
+            <!-- ====================================
+                 댓글 작성
+            ===================================== -->
+
+            <div
+                id="comment-form-area"
+                class="episode-comment-form-area"
+            >
+
+                <textarea
+                    id="comment-input"
+                    class="episode-comment-input"
+                    placeholder="댓글을 입력해주세요."
+                    maxlength="1000"
+                ></textarea>
+
+
+                <div class="episode-comment-form-bottom">
+
+                    <span class="episode-comment-limit">
+                        최대 1000자
+                    </span>
+
+
+                    <button
+                        type="button"
+                        id="comment-submit-button"
+                        class="episode-comment-submit"
+                        onclick="submitComment()"
+                    >
+                        댓글 등록
+                    </button>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ====================================
+                 로그인하지 않은 경우
+            ===================================== -->
+
+            <div
+                id="comment-login-message"
+                class="episode-comment-login-message"
+                style="display:none;"
+            >
+
+                댓글을 작성하려면
+                <a href="login.html">
+                    로그인하세요.
+                </a>
+
+            </div>
+
+
+
+            <!-- ====================================
+                 댓글 목록
+            ===================================== -->
+
+            <div
+                id="episode-comments"
+                class="episode-comments-list"
+            >
+
+                <p class="episode-comments-loading">
+                    댓글을 불러오는 중...
+                </p>
+
+            </div>
+
+
+        </section>
+
+
     </div>
 
 </main>
@@ -186,6 +296,568 @@ const episodeId =
     params.get("id");
 
 
+
+// ========================================
+// 현재 로그인 사용자
+// ========================================
+
+let currentUser = null;
+
+
+
+// ========================================
+// HTML 특수문자 처리
+// ========================================
+
+function escapeHTML(text) {
+
+    if (
+        text === null ||
+        text === undefined
+    ) {
+
+        return "";
+
+    }
+
+
+    return String(text)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+
+// ========================================
+// 현재 로그인 사용자 확인
+// ========================================
+
+async function loadCurrentUser() {
+
+    const result =
+        await supabaseClient.auth.getUser();
+
+
+    if (result.error) {
+
+        console.error(
+            "사용자 확인 오류:",
+            result.error
+        );
+
+        currentUser = null;
+
+        return;
+
+    }
+
+
+    currentUser =
+        result.data.user || null;
+
+
+    updateCommentForm();
+
+}
+
+
+
+// ========================================
+// 댓글 작성창 상태 업데이트
+// ========================================
+
+function updateCommentForm() {
+
+    const formArea =
+        document.getElementById(
+            "comment-form-area"
+        );
+
+
+    const loginMessage =
+        document.getElementById(
+            "comment-login-message"
+        );
+
+
+    if (!formArea || !loginMessage) {
+
+        return;
+
+    }
+
+
+
+    if (currentUser) {
+
+        formArea.style.display =
+            "block";
+
+        loginMessage.style.display =
+            "none";
+
+    } else {
+
+        formArea.style.display =
+            "none";
+
+        loginMessage.style.display =
+            "block";
+
+    }
+
+}
+
+
+
+// ========================================
+// 댓글 불러오기
+// ========================================
+
+async function loadComments() {
+
+    const commentList =
+        document.getElementById(
+            "episode-comments"
+        );
+
+
+    const commentCount =
+        document.getElementById(
+            "comment-count"
+        );
+
+
+    if (!episodeId) {
+
+        return;
+
+    }
+
+
+
+    const result =
+        await supabaseClient.rpc(
+            "get_episode_comments",
+            {
+                target_episode_id:
+                    episodeId
+            }
+        );
+
+
+
+    if (result.error) {
+
+        console.error(
+            "댓글 불러오기 오류:",
+            result.error
+        );
+
+
+        commentList.innerHTML = `
+
+            <div class="episode-comments-error">
+
+                댓글을 불러오지 못했습니다.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+
+    const comments =
+        result.data || [];
+
+
+
+    commentCount.textContent =
+        comments.length + "개";
+
+
+
+    // =====================================
+    // 댓글이 없는 경우
+    // =====================================
+
+    if (comments.length === 0) {
+
+        commentList.innerHTML = `
+
+            <div class="episode-comments-empty">
+
+                아직 댓글이 없습니다.
+
+                <span>
+                    첫 번째 댓글을 남겨보세요.
+                </span>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+
+    // =====================================
+    // 댓글 출력
+    // =====================================
+
+    let html = "";
+
+
+
+    comments.forEach(
+        function (comment) {
+
+            const date =
+                new Date(
+                    comment.created_at
+                ).toLocaleString(
+                    "ko-KR",
+                    {
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                        hour: "2-digit",
+                        minute: "2-digit"
+                    }
+                );
+
+
+            const isMine =
+                currentUser &&
+                currentUser.id ===
+                    comment.user_id;
+
+
+
+            html += `
+
+                <div
+                    class="episode-comment-item"
+                >
+
+
+                    <div
+                        class="episode-comment-header"
+                    >
+
+                        <div
+                            class="episode-comment-user"
+                        >
+
+                            <div
+                                class="episode-comment-avatar"
+                            >
+                                ${escapeHTML(
+                                    (
+                                        comment.nickname ||
+                                        "?"
+                                    ).charAt(0)
+                                )}
+                            </div>
+
+
+                            <strong>
+
+                                ${escapeHTML(
+                                    comment.nickname ||
+                                    "알 수 없는 사용자"
+                                )}
+
+                            </strong>
+
+                        </div>
+
+
+                        <span
+                            class="episode-comment-date"
+                        >
+
+                            ${date}
+
+                        </span>
+
+                    </div>
+
+
+                    <div
+                        class="episode-comment-content"
+                    >
+
+                        ${escapeHTML(
+                            comment.content
+                        ).replace(
+                            /\n/g,
+                            "<br>"
+                        )}
+
+                    </div>
+
+
+                    ${
+                        isMine
+                        ? `
+
+                            <button
+                                type="button"
+                                class="episode-comment-delete"
+                                onclick="deleteComment('${comment.id}')"
+                            >
+                                삭제
+                            </button>
+
+                        `
+                        : ""
+                    }
+
+                </div>
+
+            `;
+
+        }
+    );
+
+
+
+    commentList.innerHTML =
+        html;
+
+}
+
+
+
+// ========================================
+// 댓글 등록
+// ========================================
+
+async function submitComment() {
+
+    if (!currentUser) {
+
+        alert(
+            "댓글을 작성하려면 로그인하세요."
+        );
+
+        return;
+
+    }
+
+
+
+    const input =
+        document.getElementById(
+            "comment-input"
+        );
+
+
+    const button =
+        document.getElementById(
+            "comment-submit-button"
+        );
+
+
+    const content =
+        input.value.trim();
+
+
+
+    // =====================================
+    // 빈 댓글
+    // =====================================
+
+    if (!content) {
+
+        alert(
+            "댓글 내용을 입력해주세요."
+        );
+
+        input.focus();
+
+        return;
+
+    }
+
+
+
+    // =====================================
+    // 등록 중
+    // =====================================
+
+    button.disabled =
+        true;
+
+    button.textContent =
+        "등록 중...";
+
+
+
+    const result =
+        await supabaseClient
+            .from("episode_comments")
+            .insert({
+
+                episode_id:
+                    episodeId,
+
+                user_id:
+                    currentUser.id,
+
+                content:
+                    content
+
+            });
+
+
+
+    if (result.error) {
+
+        console.error(
+            "댓글 등록 오류:",
+            result.error
+        );
+
+
+        alert(
+            "댓글 등록에 실패했습니다."
+        );
+
+
+        button.disabled =
+            false;
+
+        button.textContent =
+            "댓글 등록";
+
+        return;
+
+    }
+
+
+
+    // =====================================
+    // 입력창 초기화
+    // =====================================
+
+    input.value = "";
+
+
+
+    button.disabled =
+        false;
+
+    button.textContent =
+        "댓글 등록";
+
+
+
+    // =====================================
+    // 댓글 다시 불러오기
+    // =====================================
+
+    await loadComments();
+
+}
+
+
+
+// ========================================
+// 댓글 삭제
+// ========================================
+
+async function deleteComment(
+    commentId
+) {
+
+    if (!currentUser) {
+
+        return;
+
+    }
+
+
+
+    const confirmed =
+        confirm(
+            "이 댓글을 삭제하시겠습니까?"
+        );
+
+
+    if (!confirmed) {
+
+        return;
+
+    }
+
+
+
+    const result =
+        await supabaseClient
+            .from("episode_comments")
+            .delete()
+            .eq(
+                "id",
+                commentId
+            )
+            .eq(
+                "user_id",
+                currentUser.id
+            );
+
+
+
+    if (result.error) {
+
+        console.error(
+            "댓글 삭제 오류:",
+            result.error
+        );
+
+
+        alert(
+            "댓글 삭제에 실패했습니다."
+        );
+
+        return;
+
+    }
+
+
+
+    await loadComments();
+
+}
+
+
+
 // ========================================
 // 회차 불러오기
 // ========================================
@@ -198,7 +870,17 @@ async function loadEpisode() {
         );
 
 
+    // =====================================
+    // 로그인 사용자 확인
+    // =====================================
+
+    await loadCurrentUser();
+
+
+
+    // =====================================
     // ID가 없는 경우
+    // =====================================
 
     if (!episodeId) {
 
@@ -210,9 +892,10 @@ async function loadEpisode() {
     }
 
 
-    // ========================================
+
+    // =====================================
     // 현재 회차 가져오기
-    // ========================================
+    // =====================================
 
     const episodeResult =
         await supabaseClient
@@ -229,8 +912,12 @@ async function loadEpisode() {
                     status
                 )
             `)
-            .eq("id", episodeId)
+            .eq(
+                "id",
+                episodeId
+            )
             .single();
+
 
 
     if (episodeResult.error) {
@@ -242,9 +929,13 @@ async function loadEpisode() {
 
 
         contentElement.innerHTML = `
+
             <div class="episode-read-error">
+
                 회차를 불러오지 못했습니다.
+
             </div>
+
         `;
 
         return;
@@ -252,13 +943,15 @@ async function loadEpisode() {
     }
 
 
+
     const episode =
         episodeResult.data;
 
 
-    // ========================================
+
+    // =====================================
     // 작품 공개 여부 확인
-    // ========================================
+    // =====================================
 
     if (
         !episode.novels ||
@@ -266,9 +959,13 @@ async function loadEpisode() {
     ) {
 
         contentElement.innerHTML = `
+
             <div class="episode-read-error">
+
                 공개되지 않은 작품입니다.
+
             </div>
+
         `;
 
         return;
@@ -276,13 +973,15 @@ async function loadEpisode() {
     }
 
 
+
     const novelTitle =
         episode.novels.title;
 
 
-    // ========================================
+
+    // =====================================
     // 화면에 정보 표시
-    // ========================================
+    // =====================================
 
     document.title =
         episode.title +
@@ -291,10 +990,12 @@ async function loadEpisode() {
         " - NOVEL";
 
 
+
     document.getElementById(
         "novel-title"
     ).textContent =
         novelTitle;
+
 
 
     document.getElementById(
@@ -304,10 +1005,12 @@ async function loadEpisode() {
         "화";
 
 
+
     document.getElementById(
         "episode-title"
     ).textContent =
         episode.title;
+
 
 
     document.getElementById(
@@ -320,9 +1023,10 @@ async function loadEpisode() {
         );
 
 
-    // ========================================
+
+    // =====================================
     // 작품 페이지 연결
-    // ========================================
+    // =====================================
 
     document.getElementById(
         "novel-title"
@@ -331,9 +1035,10 @@ async function loadEpisode() {
         episode.novel_id;
 
 
-    // ========================================
+
+    // =====================================
     // 본문 표시
-    // ========================================
+    // =====================================
 
     document.getElementById(
         "episode-content"
@@ -346,9 +1051,10 @@ async function loadEpisode() {
         );
 
 
-    // ========================================
+
+    // =====================================
     // 회차 목록 연결
-    // ========================================
+    // =====================================
 
     document.getElementById(
         "episode-list"
@@ -357,9 +1063,10 @@ async function loadEpisode() {
         episode.novel_id;
 
 
-    // ========================================
+
+    // =====================================
     // 이전 회차 찾기
-    // ========================================
+    // =====================================
 
     const previousResult =
         await supabaseClient
@@ -384,6 +1091,7 @@ async function loadEpisode() {
             .limit(1);
 
 
+
     if (
         !previousResult.error &&
         previousResult.data.length > 0
@@ -402,7 +1110,6 @@ async function loadEpisode() {
         previousButton.href =
             "episode-read.html?id=" +
             previousEpisode.id;
-
 
     } else {
 
@@ -428,9 +1135,10 @@ async function loadEpisode() {
     }
 
 
-    // ========================================
+
+    // =====================================
     // 다음 회차 찾기
-    // ========================================
+    // =====================================
 
     const nextResult =
         await supabaseClient
@@ -455,6 +1163,7 @@ async function loadEpisode() {
             .limit(1);
 
 
+
     if (
         !nextResult.error &&
         nextResult.data.length > 0
@@ -473,7 +1182,6 @@ async function loadEpisode() {
         nextButton.href =
             "episode-read.html?id=" +
             nextEpisode.id;
-
 
     } else {
 
@@ -498,37 +1206,13 @@ async function loadEpisode() {
 
     }
 
-}
 
 
+    // =====================================
+    // 댓글 불러오기
+    // =====================================
 
-// ========================================
-// HTML 특수문자 처리
-// ========================================
-
-function escapeHTML(text) {
-
-    return text
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
-        );
+    await loadComments();
 
 }
 
