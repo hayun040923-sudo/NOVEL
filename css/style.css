@@ -4297,4 +4297,10 @@ footer {
         grid-template-columns: 1fr;
     }
 
+}#notification-button {
+    opacity: 1 !important;
+}
+
+#notification-button:disabled {
+    opacity: 1 !important;
 }
