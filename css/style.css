@@ -4226,16 +4226,28 @@ footer {
 .site-statistics {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 14px;
-    margin-top: 22px;
+    gap: 16px;
+    margin-top: 24px;
 }
 
+
+/* 각각의 통계 항목 */
+
 .stat-card {
-    padding: 20px;
-    border: 1px solid #e5e5e5;
+    padding: 22px;
+    border: 1px solid #dedede;
     border-radius: 12px;
     background: #fff;
+
+    /* 항목끼리 확실하게 구분 */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+
+    min-height: 120px;
+    box-sizing: border-box;
 }
+
+
+/* 통계 이름 */
 
 .stat-card-label {
     font-size: 13px;
@@ -4243,22 +4255,34 @@ footer {
     color: #666;
 }
 
+
+/* 숫자 */
+
 .stat-card-number {
     margin-top: 10px;
-    font-size: 28px;
+
+    font-size: 30px;
     font-weight: 700;
+
     color: #222;
+
     line-height: 1.2;
 }
 
+
+/* 설명 */
+
 .stat-card-description {
     margin-top: 8px;
+
     font-size: 12px;
     color: #999;
 }
 
 
-@media (max-width: 800px) {
+/* 모바일 */
+
+@media (max-width: 900px) {
 
     .site-statistics {
         grid-template-columns: repeat(2, 1fr);
