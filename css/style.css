@@ -4219,4 +4219,58 @@ footer {
         margin-left: 44px;
     }
 
+}/* ==============================
+   관리자 사이트 통계
+   ============================== */
+
+.site-statistics {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-top: 22px;
+}
+
+.stat-card {
+    padding: 20px;
+    border: 1px solid #e5e5e5;
+    border-radius: 12px;
+    background: #fff;
+}
+
+.stat-card-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #666;
+}
+
+.stat-card-number {
+    margin-top: 10px;
+    font-size: 28px;
+    font-weight: 700;
+    color: #222;
+    line-height: 1.2;
+}
+
+.stat-card-description {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #999;
+}
+
+
+@media (max-width: 800px) {
+
+    .site-statistics {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+}
+
+
+@media (max-width: 500px) {
+
+    .site-statistics {
+        grid-template-columns: 1fr;
+    }
+
 }
