@@ -166,6 +166,12 @@
 <script>
 
 
+// ==================================================
+// 인증 메뉴
+// ==================================================
+
+const authMenu =
+    document.getElementById("auth-menu");
 
 
 
@@ -344,14 +350,6 @@ async function updateAuthMenu() {
 
 
                     <button
-                        id="notification-button"
-                        type="button"
-                    >
-                        🔔 알림 받기
-                    </button>
-
-
-                    <button
                         id="logout-button"
                         type="button"
                     >
@@ -362,8 +360,6 @@ async function updateAuthMenu() {
 
             `;
 
-
-            await setupNotification();
 
             setupLogout();
 
@@ -388,14 +384,6 @@ async function updateAuthMenu() {
                 <a href="account.html">
                     내 계정
                 </a>
-
-
-                <button
-                    id="notification-button"
-                    type="button"
-                >
-                    🔔 알림 받기
-                </button>
 
         `;
 
@@ -466,10 +454,8 @@ async function updateAuthMenu() {
 
 
         // ========================================
-        // 기능 연결
+        // 로그아웃 기능 연결
         // ========================================
-
-        await setupNotification();
 
         setupLogout();
 
