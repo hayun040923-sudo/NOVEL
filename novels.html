@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>소설 - NOVEL</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase.js"></script>
+</head>
+
+<body>
+
+<header>
+    <div class="header-inner">
+
+        <a href="index.html" class="logo">
+            NOVEL
+        </a>
+
+        <nav>
+            <a href="novels.html">
+                소설
+            </a>
+        </nav>
+
+        <div class="header-right">
+            <a href="index.html">
+                홈으로
+            </a>
+        </div>
+
+    </div>
+</header>
+
+
+<main class="novels-page">
+
+    <div class="novels-container">
+
+        <div class="novels-header">
+            <div>
+                <p class="novels-small">NOVEL</p>
+                <h1>소설</h1>
+            </div>
+        </div>
+
+        <div id="novel-list" class="novel-list">
+
+            <div class="novels-loading">
+                소설을 불러오는 중...
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+
+<script>
+
+// ========================================
+// HTML 특수문자 처리
+// ========================================
+
+function escapeHTML(text) {
+
+    if (
+        text === null ||
+        text === undefined
+    ) {
+        return "";
+    }
+
+    return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+// ========================================
+// 소설 불러오기
+// ========================================
+
+async function loadNovels() {
+
+    const novelList =
+        document.getElementById("novel-list");
+
+
+    // ====================================
+    // Supabase RPC
+    // ====================================
+
+    const result =
+        await supabaseClient.rpc(
+            "get_published_novels"
+        );
+
+
+    // ====================================
+    // 오류
+    // ====================================
+
+    if (result.error) {
+
+        console.error(
+            "소설 불러오기 오류:",
+            result.error
+        );
+
+        novelList.innerHTML = `
+            <div class="novels-error">
+                소설을 불러오지 못했습니다.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    const novels =
+        result.data || [];
+
+
+    // ====================================
+    // 소설 없음
+    // ====================================
+
+    if (novels.length === 0) {
+
+        novelList.innerHTML = `
+            <div class="novels-empty">
+                아직 등록된 소설이 없습니다.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    // ====================================
+    // 소설 카드 생성
+    // ====================================
+
+    let html = "";
+
+
+    novels.forEach(function(novel) {
+
+        const date =
+            new Date(
+                novel.created_at
+            ).toLocaleDateString("ko-KR");
+
+
+        // 표지
+        let coverHTML;
+
+
+        if (novel.cover_url) {
+
+            coverHTML = `
+                <img
+                    src="${escapeHTML(novel.cover_url)}"
+                    alt="${escapeHTML(novel.title)} 표지"
+                    class="novel-card-cover-image"
+                >
+            `;
+
+        } else {
+
+            coverHTML = `
+                <div class="novel-card-no-cover">
+                    <span>NOVEL</span>
+                </div>
+            `;
+        }
+
+
+        // 카드
+        html += `
+
+            <a
+                href="novel.html?id=${novel.id}"
+                class="novel-card"
+            >
+
+                <div class="novel-card-cover">
+                    ${coverHTML}
+                </div>
+
+
+                <div class="novel-card-info">
+
+                    <span class="novel-card-genre">
+                        ${escapeHTML(novel.genre)}
+                    </span>
+
+
+                    <h2>
+                        ${escapeHTML(novel.title)}
+                    </h2>
+
+
+                    <p class="novel-card-description">
+                        ${
+                            novel.description
+                                ? escapeHTML(
+                                    novel.description
+                                )
+                                : "작품 소개가 없습니다."
+                        }
+                    </p>
+
+
+                    <div class="novel-card-meta">
+
+                        <span>
+                            ${escapeHTML(
+                                novel.author_nickname || "알 수 없음"
+                            )}
+                        </span>
+
+                        <span>
+                            ${date}
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </a>
+
+        `;
+    });
+
+
+    novelList.innerHTML = html;
+}
+
+
+// ========================================
+// 시작
+// ========================================
+
+loadNovels();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>회차 관리 - NOVEL</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase.js"></script>
+</head>
+
+<body>
+
+<header>
+    <div class="header-inner">
+
+        <a href="index.html" class="logo">
+            NOVEL
+        </a>
+
+        <nav>
+            <a href="novels.html">소설</a>
+            <a href="#">인기작</a>
+            <a href="#">최신작</a>
+        </nav>
+
+        <div class="header-right">
+            <a href="writer.html">작가 페이지</a>
+        </div>
+
+    </div>
+</header>
+
+
+<main class="episode-page">
+
+    <div class="episode-box">
+
+        <p class="write-small">
+            EPISODES
+        </p>
+
+        <h1 id="novel-title">
+            작품 정보를 불러오는 중...
+        </h1>
+
+
+        <div class="episode-top">
+
+            <p id="episode-count">
+                회차를 불러오는 중...
+            </p>
+
+            <a
+                id="new-episode-button"
+                href="#"
+                class="episode-new-button">
+                새 회차 작성
+            </a>
+
+        </div>
+
+
+        <div id="episode-list">
+
+            <div class="episode-loading">
+                회차를 불러오는 중...
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+
+<script>
+
+let novelId = null;
+
+
+// URL에서 작품 ID 가져오기
+function getNovelId() {
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    return params.get("novel_id");
+}
+
+
+// 작품 및 회차 불러오기
+async function loadEpisodes() {
+
+    const userResult =
+        await supabaseClient.auth.getUser();
+
+    const user =
+        userResult.data.user;
+
+
+    if (!user) {
+
+        window.location.href =
+            "login.html";
+
+        return;
+    }
+
+
+    novelId =
+        getNovelId();
+
+
+    if (!novelId) {
+
+        alert(
+            "작품 정보를 찾을 수 없습니다."
+        );
+
+        window.location.href =
+            "writer.html";
+
+        return;
+    }
+
+
+    // 내 작품인지 확인
+    const novelResult =
+        await supabaseClient
+            .from("novels")
+            .select(
+                "id, title, author_id"
+            )
+            .eq("id", novelId)
+            .eq("author_id", user.id)
+            .single();
+
+
+    if (novelResult.error) {
+
+        console.error(
+            "작품 확인 오류:",
+            novelResult.error
+        );
+
+        alert(
+            "해당 작품을 확인할 수 없습니다."
+        );
+
+        window.location.href =
+            "writer.html";
+
+        return;
+    }
+
+
+    const novel =
+        novelResult.data;
+
+
+    document.getElementById(
+        "novel-title"
+    ).textContent =
+        novel.title;
+
+
+    // 새 회차 작성 버튼
+    document.getElementById(
+        "new-episode-button"
+    ).href =
+        "episode-write.html?novel_id=" +
+        novelId;
+
+
+    // 회차 목록 가져오기
+    const episodeResult =
+        await supabaseClient
+            .from("novel_episodes")
+            .select(
+                "id, episode_number, title, created_at"
+            )
+            .eq("novel_id", novelId)
+            .order(
+                "episode_number",
+                {
+                    ascending: true
+                }
+            );
+
+
+    if (episodeResult.error) {
+
+        console.error(
+            "회차 불러오기 오류:",
+            episodeResult.error
+        );
+
+        document.getElementById(
+            "episode-list"
+        ).innerHTML = `
+            <div class="episode-error">
+                회차를 불러오지 못했습니다.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    const episodes =
+        episodeResult.data;
+
+
+    document.getElementById(
+        "episode-count"
+    ).textContent =
+        "총 " + episodes.length + "화";
+
+
+    const episodeList =
+        document.getElementById(
+            "episode-list"
+        );
+
+
+    if (episodes.length === 0) {
+
+        episodeList.innerHTML = `
+            <div class="episode-empty">
+                아직 등록된 회차가 없습니다.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    let html = "";
+
+
+    episodes.forEach(function(episode) {
+
+        const date =
+            new Date(
+                episode.created_at
+            ).toLocaleDateString(
+                "ko-KR"
+            );
+
+
+        html += `
+            <div class="episode-card">
+
+                <a
+                    href="episode-read.html?id=${episode.id}"
+                    class="episode-info">
+
+                    <span class="episode-number">
+                        ${episode.episode_number}화
+                    </span>
+
+                    <h2>
+                        ${escapeHTML(episode.title)}
+                    </h2>
+
+                    <span class="episode-date">
+                        ${date}
+                    </span>
+
+                </a>
+
+                <div class="episode-actions">
+
+                    <a
+                        href="episode-edit.html?id=${episode.id}"
+                        class="episode-edit-button">
+                        수정
+                    </a>
+
+                    <button
+                        type="button"
+                        class="episode-delete-button"
+                        data-id="${episode.id}">
+                        삭제
+                    </button>
+
+                </div>
+
+            </div>
+        `;
+    });
+
+
+    episodeList.innerHTML =
+        html;
+
+}
+
+
+// 회차 삭제
+document.addEventListener(
+    "click",
+    async function(event) {
+
+        const button =
+            event.target.closest(
+                ".episode-delete-button"
+            );
+
+
+        if (!button) {
+            return;
+        }
+
+
+        const episodeId =
+            button.dataset.id;
+
+
+        const confirmed =
+            confirm(
+                "정말 이 회차를 삭제하시겠습니까?\n\n삭제하면 복구할 수 없습니다."
+            );
+
+
+        if (!confirmed) {
+            return;
+        }
+
+
+        button.disabled = true;
+
+        button.textContent =
+            "삭제 중...";
+
+
+        const result =
+            await supabaseClient
+                .from("novel_episodes")
+                .delete()
+                .eq("id", episodeId);
+
+
+        if (result.error) {
+
+            console.error(
+                "회차 삭제 오류:",
+                result.error
+            );
+
+            alert(
+                "회차 삭제에 실패했습니다.\n\n" +
+                result.error.message
+            );
+
+            button.disabled = false;
+
+            button.textContent =
+                "삭제";
+
+            return;
+        }
+
+
+        alert(
+            "회차가 삭제되었습니다."
+        );
+
+
+        loadEpisodes();
+
+    }
+);
+
+
+// HTML 특수문자 처리
+function escapeHTML(text) {
+
+    return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+// 시작
+loadEpisodes();
+
+</script>
+
+</body>
+</html>

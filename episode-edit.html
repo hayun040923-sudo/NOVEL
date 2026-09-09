@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>회차 수정 - NOVEL</title>
+
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+    ></script>
+
+    <script src="js/supabase.js"></script>
+
+</head>
+
+
+<body>
+
+
+<!-- ========================================
+     헤더
+======================================== -->
+
+<header>
+
+    <div class="header-inner">
+
+        <a
+            href="index.html"
+            class="logo"
+        >
+            NOVEL
+        </a>
+
+
+        <nav>
+
+            <a href="novels.html">
+                소설
+            </a>
+
+            <a href="#">
+                인기작
+            </a>
+
+            <a href="#">
+                최신작
+            </a>
+
+        </nav>
+
+
+        <div class="header-right">
+
+            <a href="writer.html">
+                작가 페이지
+            </a>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+
+<!-- ========================================
+     회차 수정 화면
+======================================== -->
+
+<main class="write-page">
+
+    <div class="write-box">
+
+        <p class="write-small">
+            EDIT EPISODE
+        </p>
+
+        <h1>
+            회차 수정
+        </h1>
+
+
+        <!-- 작품 정보 -->
+
+        <div id="novel-info">
+            작품 정보를 불러오는 중...
+        </div>
+
+
+        <!-- 회차 수정 폼 -->
+
+        <form id="episode-edit-form">
+
+
+            <!-- 회차 번호 -->
+
+            <div class="write-field">
+
+                <label for="episode-number">
+                    회차 번호
+                </label>
+
+                <input
+                    type="number"
+                    id="episode-number"
+                    min="1"
+                    required
+                >
+
+            </div>
+
+
+            <!-- 회차 제목 -->
+
+            <div class="write-field">
+
+                <label for="episode-title">
+                    회차 제목
+                </label>
+
+                <input
+                    type="text"
+                    id="episode-title"
+                    required
+                    placeholder="회차 제목을 입력하세요"
+                >
+
+            </div>
+
+
+            <!-- 본문 -->
+
+            <div class="write-field">
+
+                <label for="episode-content">
+                    본문
+                </label>
+
+                <textarea
+                    id="episode-content"
+                    rows="25"
+                    required
+                    placeholder="회차 본문을 입력하세요"
+                ></textarea>
+
+            </div>
+
+
+            <!-- 버튼 -->
+
+            <div class="edit-buttons">
+
+                <a
+                    id="cancel-button"
+                    href="#"
+                    class="edit-cancel-button"
+                >
+                    취소
+                </a>
+
+
+                <button
+                    type="submit"
+                    id="save-button"
+                >
+                    수정 저장
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</main>
+
+
+
+<script>
+
+
+// ========================================
+// 현재 회차 ID
+// ========================================
+
+const params =
+    new URLSearchParams(
+        window.location.search
+    );
+
+
+const episodeId =
+    params.get("id");
+
+
+let novelId = null;
+
+
+
+// ========================================
+// 회차 정보 불러오기
+// ========================================
+
+async function loadEpisode() {
+
+    const userResult =
+        await supabaseClient.auth.getUser();
+
+
+    const user =
+        userResult.data.user;
+
+
+    // 로그인 확인
+
+    if (!user) {
+
+        window.location.href =
+            "login.html";
+
+        return;
+
+    }
+
+
+    // 회차 ID 확인
+
+    if (!episodeId) {
+
+        alert(
+            "수정할 회차를 찾을 수 없습니다."
+        );
+
+        window.location.href =
+            "writer.html";
+
+        return;
+
+    }
+
+
+    // ========================================
+    // 회차 가져오기
+    // ========================================
+
+    const result =
+        await supabaseClient
+            .from("novel_episodes")
+            .select(`
+                id,
+                novel_id,
+                episode_number,
+                title,
+                content,
+                novels (
+                    title,
+                    author_id
+                )
+            `)
+            .eq("id", episodeId)
+            .single();
+
+
+    if (result.error) {
+
+        console.error(
+            "회차 불러오기 오류:",
+            result.error
+        );
+
+
+        alert(
+            "회차를 불러오지 못했습니다."
+        );
+
+
+        window.location.href =
+            "writer.html";
+
+        return;
+
+    }
+
+
+    const episode =
+        result.data;
+
+
+    // ========================================
+    // 내 작품인지 확인
+    // ========================================
+
+    if (
+        !episode.novels ||
+        episode.novels.author_id !== user.id
+    ) {
+
+        alert(
+            "이 회차를 수정할 권한이 없습니다."
+        );
+
+
+        window.location.href =
+            "writer.html";
+
+        return;
+
+    }
+
+
+    novelId =
+        episode.novel_id;
+
+
+    // ========================================
+    // 작품 정보 표시
+    // ========================================
+
+    document.getElementById(
+        "novel-info"
+    ).innerHTML = `
+
+        <div class="episode-novel-info">
+
+            <span>
+                작품
+            </span>
+
+            <strong>
+                ${escapeHTML(
+                    episode.novels.title
+                )}
+            </strong>
+
+        </div>
+
+    `;
+
+
+    // ========================================
+    // 기존 내용 입력
+    // ========================================
+
+    document.getElementById(
+        "episode-number"
+    ).value =
+        episode.episode_number;
+
+
+    document.getElementById(
+        "episode-title"
+    ).value =
+        episode.title;
+
+
+    document.getElementById(
+        "episode-content"
+    ).value =
+        episode.content;
+
+
+    // 취소 버튼
+
+    document.getElementById(
+        "cancel-button"
+    ).href =
+        "episode.html?novel_id=" +
+        novelId;
+
+}
+
+
+
+// ========================================
+// 수정 저장
+// ========================================
+
+document.getElementById(
+    "episode-edit-form"
+).addEventListener(
+    "submit",
+    async function(event) {
+
+        event.preventDefault();
+
+
+        const episodeNumber =
+            Number(
+                document.getElementById(
+                    "episode-number"
+                ).value
+            );
+
+
+        const title =
+            document.getElementById(
+                "episode-title"
+            ).value.trim();
+
+
+        const content =
+            document.getElementById(
+                "episode-content"
+            ).value.trim();
+
+
+        // ====================================
+        // 입력 확인
+        // ====================================
+
+        if (
+            !episodeNumber ||
+            episodeNumber < 1
+        ) {
+
+            alert(
+                "올바른 회차 번호를 입력해주세요."
+            );
+
+            return;
+
+        }
+
+
+        if (!title) {
+
+            alert(
+                "회차 제목을 입력해주세요."
+            );
+
+            return;
+
+        }
+
+
+        if (!content) {
+
+            alert(
+                "본문을 입력해주세요."
+            );
+
+            return;
+
+        }
+
+
+        // ====================================
+        // 저장
+        // ====================================
+
+        const saveButton =
+            document.getElementById(
+                "save-button"
+            );
+
+
+        saveButton.disabled = true;
+
+
+        saveButton.textContent =
+            "저장 중...";
+
+
+        const result =
+            await supabaseClient
+                .from("novel_episodes")
+                .update({
+
+                    episode_number:
+                        episodeNumber,
+
+                    title:
+                        title,
+
+                    content:
+                        content,
+
+                    updated_at:
+                        new Date().toISOString()
+
+                })
+                .eq(
+                    "id",
+                    episodeId
+                );
+
+
+        // ====================================
+        // 오류 처리
+        // ====================================
+
+        if (result.error) {
+
+            console.error(
+                "회차 수정 오류:",
+                result.error
+            );
+
+
+            if (
+                result.error.code ===
+                "23505"
+            ) {
+
+                alert(
+                    "이미 존재하는 회차 번호입니다.\n\n" +
+                    "다른 회차 번호를 입력해주세요."
+                );
+
+            } else {
+
+                alert(
+                    "회차 수정에 실패했습니다.\n\n" +
+                    result.error.message
+                );
+
+            }
+
+
+            saveButton.disabled = false;
+
+
+            saveButton.textContent =
+                "수정 저장";
+
+
+            return;
+
+        }
+
+
+        // ====================================
+        // 수정 완료
+        // ====================================
+
+        alert(
+            "회차가 수정되었습니다!"
+        );
+
+
+        window.location.href =
+            "episode-read.html?id=" +
+            episodeId;
+
+    }
+);
+
+
+
+// ========================================
+// HTML 특수문자 처리
+// ========================================
+
+function escapeHTML(text) {
+
+    return text
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+
+// ========================================
+// 시작
+// ========================================
+
+loadEpisode();
+
+
+</script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>NOVEL - 회원가입</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<header>
+    <div class="header-inner">
+
+        <a href="index.html" class="logo">
+            NOVEL
+        </a>
+
+        <div class="header-right">
+            <a href="login.html" class="login-btn">
+                로그인
+            </a>
+        </div>
+
+    </div>
+</header>
+
+
+<main>
+
+<section class="auth-page">
+
+    <div class="auth-box">
+
+        <p class="section-small">
+            JOIN NOVEL
+        </p>
+
+        <h1>회원가입</h1>
+
+        <p class="auth-description">
+            NOVEL에서 새로운 이야기를 만나보세요.
+        </p>
+
+
+        <form id="register-form">
+
+            <label>
+                이메일
+            </label>
+
+            <input
+                type="email"
+                id="email"
+                placeholder="example@email.com"
+                required
+            >
+
+
+            <label>
+                비밀번호
+            </label>
+
+            <input
+                type="password"
+                id="password"
+                placeholder="6자 이상 입력"
+                required
+            >
+
+
+            <button type="submit" class="auth-submit">
+                회원가입
+            </button>
+
+        </form>
+
+
+        <p id="message"></p>
+
+
+        <div class="auth-link">
+            이미 계정이 있으신가요?
+            <a href="login.html">로그인</a>
+        </div>
+
+    </div>
+
+</section>
+
+</main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="js/supabase.js"></script>
+
+<script>
+
+const form = document.getElementById("register-form");
+
+const message = document.getElementById("message");
+
+
+form.addEventListener("submit", async (event) => {
+
+    event.preventDefault();
+
+
+    const email =
+        document.getElementById("email").value;
+
+    const password =
+        document.getElementById("password").value;
+
+
+    message.textContent = "회원가입 중...";
+
+
+    const { data, error } =
+        await supabaseClient.auth.signUp({
+
+            email: email,
+
+            password: password
+
+        });
+
+
+    if (error) {
+
+        message.textContent =
+            "회원가입 실패: " + error.message;
+
+        return;
+
+    }
+
+
+    message.textContent =
+        "회원가입이 완료되었습니다.";
+
+});
+
+</script>
+
+</body>
+</html>

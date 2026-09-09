@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>내 계정 - NOVEL</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase.js"></script>
+</head>
+
+<body>
+
+<header>
+    <div class="header-inner">
+
+        <a href="index.html" class="logo">
+            NOVEL
+        </a>
+
+        <nav>
+            <a href="novels.html">소설</a>
+            <a href="#">인기작</a>
+            <a href="#">최신작</a>
+        </nav>
+
+        <div class="header-right">
+            <a href="index.html">홈으로</a>
+        </div>
+
+    </div>
+</header>
+
+
+<main class="account-page">
+
+    <div class="account-box">
+
+        <p class="account-small">
+            MY ACCOUNT
+        </p>
+
+        <h1>
+            내 계정
+        </h1>
+
+        <div id="account-info">
+            계정 정보를 불러오는 중...
+        </div>
+
+    </div>
+
+</main>
+
+
+<script>
+
+async function loadAccount() {
+
+    const accountInfo =
+        document.getElementById("account-info");
+
+
+    // 현재 로그인한 사용자 확인
+    const result =
+        await supabaseClient.auth.getUser();
+
+    const user =
+        result.data.user;
+
+
+    // 로그인하지 않은 경우
+    if (!user) {
+
+        window.location.href = "login.html";
+        return;
+
+    }
+
+
+    // profiles에서 내 정보 가져오기
+    const profileResult =
+        await supabaseClient
+            .from("profiles")
+            .select("id, email, nickname, role, writer_status")
+            .eq("id", user.id)
+            .single();
+
+
+    const profile =
+        profileResult.data;
+
+    const error =
+        profileResult.error;
+
+
+    // 오류가 발생한 경우
+    if (error) {
+
+        console.error(
+            "Profile 오류:",
+            error
+        );
+
+        accountInfo.innerHTML = `
+            <p class="account-error">
+                계정 정보를 불러오지 못했습니다.
+            </p>
+        `;
+
+        return;
+
+    }
+
+
+    // 회원 등급 표시
+    let roleText = "일반 회원";
+
+    if (profile.role === "writer") {
+        roleText = "작가";
+    }
+
+    if (profile.role === "admin") {
+        roleText = "관리자";
+    }
+
+
+    // 작가 상태 표시
+    let writerStatusText = "작가 신청 전";
+
+    if (profile.writer_status === "pending") {
+        writerStatusText = "승인 대기 중";
+    }
+
+    if (profile.writer_status === "approved") {
+        writerStatusText = "작가 승인됨";
+    }
+
+    if (profile.writer_status === "rejected") {
+        writerStatusText = "신청 거절됨";
+    }
+
+
+    // 화면 표시
+    accountInfo.innerHTML = `
+
+        <div class="account-card">
+
+            <div class="account-row">
+                <span>이메일</span>
+                <strong>${profile.email}</strong>
+            </div>
+
+            <div class="account-row">
+                <span>닉네임</span>
+                <strong>${profile.nickname}</strong>
+            </div>
+
+            <div class="account-row">
+                <span>회원 등급</span>
+                <strong>${roleText}</strong>
+            </div>
+
+            <div class="account-row">
+                <span>작가 상태</span>
+                <strong>${writerStatusText}</strong>
+            </div>
+
+        </div>
+
+    `;
+
+
+    // 작가 신청 버튼 추가
+    if (
+        profile.role === "reader" &&
+        profile.writer_status === "none"
+    ) {
+
+        const button =
+            document.createElement("button");
+
+        button.id =
+            "writer-apply-button";
+
+        button.className =
+            "writer-apply-button";
+
+        button.textContent =
+            "작가 신청하기";
+
+
+        accountInfo.appendChild(button);
+
+
+        // 버튼 클릭
+        button.addEventListener(
+            "click",
+            async function () {
+
+                const confirmed =
+                    confirm(
+                        "작가 신청을 하시겠습니까?"
+                    );
+
+
+                if (!confirmed) {
+                    return;
+                }
+
+
+                button.disabled = true;
+
+                button.textContent =
+                    "신청 중...";
+
+
+                // 안전한 서버 함수 실행
+                const rpcResult =
+                    await supabaseClient.rpc(
+                        "request_writer_application"
+                    );
+
+
+                if (rpcResult.error) {
+
+                    console.error(
+                        "작가 신청 오류:",
+                        rpcResult.error
+                    );
+
+                    alert(
+                        "작가 신청에 실패했습니다.\n\n"
+                        + rpcResult.error.message
+                    );
+
+                    button.disabled = false;
+
+                    button.textContent =
+                        "작가 신청하기";
+
+                    return;
+
+                }
+
+
+                alert(
+                    "작가 신청이 완료되었습니다!"
+                );
+
+
+                window.location.reload();
+
+            }
+        );
+
+    }
+
+
+    // 승인 대기 중
+    if (
+        profile.writer_status === "pending"
+    ) {
+
+        accountInfo.insertAdjacentHTML(
+            "beforeend",
+            `
+            <div class="writer-message">
+                작가 신청이 접수되었습니다.<br>
+                관리자 승인 후 작가 활동이 가능합니다.
+            </div>
+            `
+        );
+
+    }
+
+
+    // 작가 승인 완료
+    if (
+        profile.writer_status === "approved"
+    ) {
+
+        accountInfo.insertAdjacentHTML(
+            "beforeend",
+            `
+            <div class="writer-message">
+                작가 승인이 완료되었습니다.<br>
+                이제 소설을 작성할 수 있습니다.
+            </div>
+            `
+        );
+
+    }
+
+}
+
+
+// 페이지 실행
+loadAccount();
+
+</script>
+
+</body>
+</html>

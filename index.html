@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>NOVEL - 웹소설 플랫폼</title>
+
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
+
+    <!-- Supabase -->
+    <script
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+    ></script>
+
+    <script src="js/supabase.js"></script>
+
+</head>
+
+
+<body>
+
+
+<!-- ========================================
+     헤더
+======================================== -->
+
+<header>
+
+    <div class="header-inner">
+
+
+        <!-- 로고 -->
+
+        <a
+            href="index.html"
+            class="logo"
+        >
+            NOVEL
+        </a>
+
+
+
+        <!-- 메뉴 -->
+
+        <nav>
+
+            <a href="novels.html">
+                소설
+            </a>
+
+        </nav>
+
+
+
+        <!-- 오른쪽 메뉴 -->
+
+        <div class="header-right">
+
+
+            <!-- 검색 버튼 -->
+
+            <button
+                class="search-btn"
+                type="button"
+            >
+                ⌕
+            </button>
+
+
+
+            <!-- 로그인 메뉴 -->
+
+            <div id="auth-menu">
+
+                <a href="login.html">
+                    로그인
+                </a>
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+</header>
+
+
+
+<!-- ========================================
+     메인
+======================================== -->
+
+<main>
+
+
+    <!-- =====================================
+         메인 배너
+    ====================================== -->
+
+    <section class="hero">
+
+        <div>
+
+
+            <p class="hero-small">
+                NOVEL ORIGINAL
+            </p>
+
+
+
+            <h1>
+
+                새로운 이야기를<br>
+                만나보세요.
+
+            </h1>
+
+
+
+            <p class="hero-description">
+
+                다양한 작가들의 이야기를
+                한곳에서 만나보세요.
+
+            </p>
+
+
+
+            <a
+                href="novels.html"
+                class="main-btn"
+            >
+
+                소설 둘러보기
+
+            </a>
+
+
+        </div>
+
+    </section>
+
+
+</main>
+
+
+
+<!-- ========================================
+     푸터
+======================================== -->
+
+<footer>
+
+    <div class="footer-inner">
+
+
+        <strong>
+            NOVEL
+        </strong>
+
+
+
+        <p>
+            새로운 이야기를 만나는 곳
+        </p>
+
+
+
+        <small>
+            © 2026 NOVEL. All rights reserved.
+        </small>
+
+
+    </div>
+
+</footer>
+
+
+
+<!-- ========================================
+     로그인 상태 확인
+======================================== -->
+
+<script>
+
+
+const authMenu =
+    document.getElementById(
+        "auth-menu"
+    );
+
+
+
+// ========================================
+// 로그인 상태 확인
+// ========================================
+
+async function updateAuthMenu() {
+
+    try {
+
+
+        // =================================
+        // 현재 로그인한 사용자 확인
+        // =================================
+
+        const userResult =
+            await supabaseClient
+                .auth
+                .getUser();
+
+
+        const user =
+            userResult.data.user;
+
+
+
+        // =================================
+        // 로그인하지 않은 경우
+        // =================================
+
+        if (!user) {
+
+            authMenu.innerHTML = `
+
+                <a href="login.html">
+                    로그인
+                </a>
+
+            `;
+
+            return;
+
+        }
+
+
+
+        // =================================
+        // 프로필 정보 가져오기
+        // =================================
+
+        const profileResult =
+            await supabaseClient
+
+                .from("profiles")
+
+                .select(
+                    "nickname, role, writer_status"
+                )
+
+                .eq(
+                    "id",
+                    user.id
+                )
+
+                .single();
+
+
+
+        // =================================
+        // 프로필 확인 실패
+        // =================================
+
+        if (profileResult.error) {
+
+            console.error(
+                "프로필 확인 실패:",
+                profileResult.error
+            );
+
+
+            authMenu.innerHTML = `
+
+                <div class="user-menu">
+
+
+                    <a href="account.html">
+                        내 계정
+                    </a>
+
+
+                    <button
+                        id="logout-button"
+                        type="button"
+                    >
+                        로그아웃
+                    </button>
+
+
+                </div>
+
+            `;
+
+
+            setupLogout();
+
+            return;
+
+        }
+
+
+
+        const profile =
+            profileResult.data;
+
+
+
+        // =================================
+        // 기본 메뉴
+        // =================================
+
+        let menuHTML = `
+
+            <div class="user-menu">
+
+
+                <a href="account.html">
+                    내 계정
+                </a>
+
+        `;
+
+
+
+        // =================================
+        // 승인된 작가
+        // =================================
+
+        if (
+
+            profile.role === "writer" &&
+
+            profile.writer_status === "approved"
+
+        ) {
+
+            menuHTML += `
+
+                <a href="writer.html">
+                    작가 페이지
+                </a>
+
+            `;
+
+        }
+
+
+
+        // =================================
+        // 관리자
+        // =================================
+
+        if (
+            profile.role === "admin"
+        ) {
+
+            menuHTML += `
+
+                <a href="admin.html">
+                    관리자 페이지
+                </a>
+
+            `;
+
+        }
+
+
+
+        // =================================
+        // 로그아웃
+        // =================================
+
+        menuHTML += `
+
+                <button
+                    id="logout-button"
+                    type="button"
+                >
+
+                    로그아웃
+
+                </button>
+
+
+            </div>
+
+        `;
+
+
+
+        authMenu.innerHTML =
+            menuHTML;
+
+
+
+        setupLogout();
+
+
+    } catch (error) {
+
+
+        console.error(
+            "로그인 상태 확인 실패:",
+            error
+        );
+
+
+        authMenu.innerHTML = `
+
+            <a href="login.html">
+                로그인
+            </a>
+
+        `;
+
+    }
+
+}
+
+
+
+// ========================================
+// 로그아웃
+// ========================================
+
+function setupLogout() {
+
+
+    const logoutButton =
+        document.getElementById(
+            "logout-button"
+        );
+
+
+    if (!logoutButton) {
+
+        return;
+
+    }
+
+
+
+    logoutButton.addEventListener(
+        "click",
+        async function () {
+
+
+            logoutButton.disabled =
+                true;
+
+
+            logoutButton.textContent =
+                "로그아웃 중...";
+
+
+
+            const result =
+                await supabaseClient
+                    .auth
+                    .signOut();
+
+
+
+            if (result.error) {
+
+
+                alert(
+                    "로그아웃 실패: " +
+                    result.error.message
+                );
+
+
+                logoutButton.disabled =
+                    false;
+
+
+                logoutButton.textContent =
+                    "로그아웃";
+
+
+                return;
+
+            }
+
+
+
+            // 로그아웃 성공
+
+            window.location.reload();
+
+        }
+    );
+
+}
+
+
+
+// ========================================
+// 페이지 실행
+// ========================================
+
+updateAuthMenu();
+
+
+</script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>작가 페이지 - NOVEL</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase.js"></script>
+</head>
+
+<body>
+
+<header>
+    <div class="header-inner">
+
+        <a href="index.html" class="logo">
+            NOVEL
+        </a>
+
+        <nav>
+            <a href="novels.html">소설</a>
+            <a href="#">인기작</a>
+            <a href="#">최신작</a>
+        </nav>
+
+        <div class="header-right">
+            <a href="account.html">내 계정</a>
+        </div>
+
+    </div>
+</header>
+
+
+<main class="writer-page">
+
+    <div class="writer-box">
+
+        <p class="writer-small">
+            WRITER
+        </p>
+
+        <h1>작가 페이지</h1>
+
+        <div id="writer-content">
+
+            <p>
+                작가 정보를 불러오는 중...
+            </p>
+
+        </div>
+
+    </div>
+
+</main>
+
+
+<script>
+
+async function loadWriterPage() {
+
+    const writerContent =
+        document.getElementById("writer-content");
+
+
+    // 로그인 확인
+    const userResult =
+        await supabaseClient.auth.getUser();
+
+    const user =
+        userResult.data.user;
+
+
+    if (!user) {
+
+        window.location.href =
+            "login.html";
+
+        return;
+    }
+
+
+    // 작가 권한 확인
+    const profileResult =
+        await supabaseClient
+            .from("profiles")
+            .select(
+                "nickname, role, writer_status"
+            )
+            .eq("id", user.id)
+            .single();
+
+
+    if (profileResult.error) {
+
+        console.error(
+            "프로필 확인 오류:",
+            profileResult.error
+        );
+
+        writerContent.innerHTML = `
+            <p class="writer-error">
+                작가 정보를 불러오지 못했습니다.
+            </p>
+        `;
+
+        return;
+    }
+
+
+    const profile =
+        profileResult.data;
+
+
+    // 승인된 작가인지 확인
+    if (
+        profile.role !== "writer" ||
+        profile.writer_status !== "approved"
+    ) {
+
+        writerContent.innerHTML = `
+
+            <div class="writer-no-access">
+
+                <h2>
+                    작가 권한이 없습니다.
+                </h2>
+
+                <p>
+                    승인된 작가만 이용할 수 있습니다.
+                </p>
+
+                <a
+                    href="account.html"
+                    class="writer-back-button">
+                    내 계정으로
+                </a>
+
+            </div>
+
+        `;
+
+        return;
+    }
+
+
+    // 내 소설 가져오기
+    const novelsResult =
+        await supabaseClient
+            .from("novels")
+            .select(
+                "id, title, genre, description, created_at"
+            )
+            .eq("author_id", user.id)
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
+
+
+    if (novelsResult.error) {
+
+        console.error(
+            "내 작품 불러오기 오류:",
+            novelsResult.error
+        );
+
+        writerContent.innerHTML = `
+            <p class="writer-error">
+                작품을 불러오지 못했습니다.
+            </p>
+        `;
+
+        return;
+    }
+
+
+    const novels =
+        novelsResult.data;
+
+
+    let html = `
+
+        <div class="writer-welcome">
+
+            <h2>
+                ${profile.nickname} 작가님
+            </h2>
+
+            <p>
+                등록한 작품을 관리할 수 있습니다.
+            </p>
+
+        </div>
+
+
+        <div class="writer-actions">
+
+            <a
+                href="write.html"
+                class="writer-action">
+
+                <strong>
+                    새 소설 작성
+                </strong>
+
+                <span>
+                    새로운 작품을 등록합니다.
+                </span>
+
+            </a>
+
+        </div>
+
+
+        <div class="my-novels">
+
+            <div class="my-novels-header">
+
+                <h2>
+                    내 작품
+                </h2>
+
+                <span>
+                    ${novels.length}개
+                </span>
+
+            </div>
+
+    `;
+
+
+    // 작품이 없는 경우
+    if (novels.length === 0) {
+
+        html += `
+
+            <div class="my-novels-empty">
+
+                아직 등록한 작품이 없습니다.
+
+            </div>
+
+        `;
+
+    } else {
+
+
+        // 작품 목록
+        novels.forEach(function(novel) {
+
+            const date =
+                new Date(
+                    novel.created_at
+                ).toLocaleDateString(
+                    "ko-KR"
+                );
+
+
+            html += `
+
+                <div class="my-novel-card">
+
+
+                    <!-- 작품 정보 -->
+
+                    <a
+                        href="novel.html?id=${novel.id}"
+                        class="my-novel-info">
+
+                        <span class="my-novel-genre">
+                            ${novel.genre}
+                        </span>
+
+                        <h3>
+                            ${novel.title}
+                        </h3>
+
+                        <p>
+                            ${
+                                novel.description
+                                || "소개글이 없습니다."
+                            }
+                        </p>
+
+                    </a>
+
+
+                    <!-- 작품 관리 -->
+
+                    <div class="my-novel-actions">
+
+    <span class="my-novel-date">
+        ${date}
+    </span>
+
+    <a
+        href="edit.html?id=${novel.id}"
+        class="my-novel-edit">
+        수정
+    </a>
+
+    <a
+        href="episode.html?novel_id=${novel.id}"
+        class="my-novel-episode">
+        회차 관리
+    </a>
+
+    <button
+        type="button"
+        class="my-novel-delete"
+        data-id="${novel.id}">
+        삭제
+    </button>
+
+</div>
+
+                </div>
+
+            `;
+
+        });
+
+    }
+
+
+    html += `
+
+        </div>
+
+    `;
+
+
+    writerContent.innerHTML =
+        html;
+
+}
+
+
+/*
+    작품 삭제
+*/
+
+document.addEventListener(
+    "click",
+    async function(event) {
+
+        const button =
+            event.target.closest(
+                ".my-novel-delete"
+            );
+
+
+        // 삭제 버튼이 아니면 종료
+        if (!button) {
+            return;
+        }
+
+
+        const novelId =
+            button.dataset.id;
+
+
+        // 삭제 확인
+        const confirmed =
+            confirm(
+                "정말 이 작품을 삭제하시겠습니까?\n\n삭제하면 복구할 수 없습니다."
+            );
+
+
+        if (!confirmed) {
+            return;
+        }
+
+
+        button.disabled = true;
+
+        button.textContent =
+            "삭제 중...";
+
+
+        // Supabase에서 삭제
+        const result =
+            await supabaseClient
+                .from("novels")
+                .delete()
+                .eq("id", novelId);
+
+
+        if (result.error) {
+
+            console.error(
+                "작품 삭제 오류:",
+                result.error
+            );
+
+
+            alert(
+                "작품 삭제에 실패했습니다.\n\n" +
+                result.error.message
+            );
+
+
+            button.disabled = false;
+
+            button.textContent =
+                "삭제";
+
+            return;
+        }
+
+
+        alert(
+            "작품이 삭제되었습니다."
+        );
+
+
+        // 목록 새로고침
+        loadWriterPage();
+
+    }
+);
+
+
+// 페이지 시작
+loadWriterPage();
+
+</script>
+
+</body>
+</html>
